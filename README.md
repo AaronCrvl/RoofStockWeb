@@ -1,12 +1,39 @@
-# React + Vite
+# 📋 Resumo Executivo da Aplicação
+A aplicação é uma plataforma web de gestão de estoques voltada para empresas, acessível via desktop e dispositivos móveis. O sistema permite controle granular por empresa e usuário, com recursos voltados à gestão de produtos, promoções e vencimentos, além de relatórios automatizados de fechamento de estoque.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Seu funcionamento é centralizado em uma interface amigável, onde usuários acessam apenas os estoques autorizados, podendo executar ações como inclusão, baixa e edição de produtos. Um recurso de automação semanal gera relatórios de fechamento de estoque enviados por e-mail aos administradores, promovendo acompanhamento remoto e eficiência operacional.
 
-Currently, two official plugins are available:
+## ✅ Funcionalidades da Aplicação
+### 🔐 Acesso e Gestão de Usuários
+- Login com CNPJ da empresa, nome de usuário e senha.
+- Usuário administrador pode:
+  - Cadastrar empresas e novos usuários.
+  - Definir permissões de acesso e perfil de administrador para usuários.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🧭 Navegação e Acesso aos Estoques
+- Redirecionamento à tela principal após login.
+- Visualização dos estoques com acesso autorizado.
+- Escolha de estoque para gestão individual.
 
-## Expanding the ESLint configuration
+### 📦 Gestão de Produtos e Estoques
+- Adição e remoção (baixa) de produtos.
+- Edição de promoções e datas de vencimento dos produtos.
+- Visualização de:
+  - Produtos em estoque.
+  - Entradas diárias.
+  - Promoções ativas.
+  - Produtos com vencimentos próximos.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 📱 Acessibilidade
+- Interface web responsiva para acesso via mobile e desktop.
+
+### 🔄 Processos Automatizados
+- Execução semanal de rotina de fechamento de estoque:
+  - Cálculo de valor esperado de venda e estoque final.
+  - Geração e envio de relatório por e-mail para administradores.
+
+- Notificações automáticas de:
+  - Promoções próximas do fim.
+  - Produtos próximos do vencimento.
+
+Made with the help of 🎶 and my 🐶.

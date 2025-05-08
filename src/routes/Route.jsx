@@ -1,23 +1,34 @@
-import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import MainRoute from './MainRoute';
-import AuthRoute from './AuthRoute';
-import AdminRoute from './AdminRoute';
-import { useUser } from '../contexts/UserContext';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,  
+} from "react-router-dom";
+import Home from "../pages/Home";
+import Dashboard from "../pages/Dashboard";
+import Login from "../pages/Login/Login";
+import AdminDashboard from "../pages/Admin/AdminDashboard";
+import PrivateRoute from "./PrivateRoute";
+import AdminRoute from "./AdminRoute";
 
-export default function Route() {
-  const { logged, userId, admin } = useUser();
-  console.log({ logged, userId });
-
-  // Lógica de renderização condicional
+export default function AppRoutes() {
   return (
-    <Router> {/* Only one Router here */}
-      <div className="min-h-screen flex flex-col">
-        {/* Your routes */}
-        <AuthRoute />
-        {/* <AdminRoute />
-        <MainRoute /> */}
-      </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+
+        {/* Routes for authenticated users */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+
+        {/* Routes only for admins */}
+        <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+      </Routes>
     </Router>
   );
 }

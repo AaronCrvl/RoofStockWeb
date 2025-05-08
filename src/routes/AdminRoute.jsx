@@ -1,17 +1,14 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import AdminDashboard from '../pages/Admin/AdminDashboard';
-import Home from '../pages/Home';
-import Stock from '../pages/Stock/Stock';
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useUser } from "../contexts/UserContext";
 
 const AdminRoute = () => {
-  return (
-    <Routes> {/* Only Routes here */}
-      <Route path="/admin-dashboard" element={<AdminDashboard />} />
-      <Route path="/home" element={<Home />} />
-      <Route path="/stock" element={<Stock />} />
-    </Routes>
-  );
+  const { logged, admin } = useUser();
+
+  if (!logged) return <Navigate to="/login" />;
+  if (!admin) return <Navigate to="/dashboard" />;
+
+  return <Outlet />;
 };
 
 export default AdminRoute;

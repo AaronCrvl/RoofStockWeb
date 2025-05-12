@@ -37,7 +37,7 @@ const TopBar = () => {
 
   // JSX ------------------------------------->
   return (
-    <div className="bg-blue-400 text-white p-4 shadow-md">
+    <div className="bg-orange-400 text-white p-4 shadow-md">
       <div className="flex justify-between items-center">        
           <h1 className="text-2xl font-semibold">RoofStock</h1>
           {/* Company Selector */}

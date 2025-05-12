@@ -32,7 +32,7 @@ const Login = () => {
 
   return (
     <>
-      <div className="flex justify-center items-center min-h-screen bg-blue-100 px-6">
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-orange-500 to-white-500/50 px-6">
         <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
           <h2 className="text-4xl font-bold mb-6 text-center text-gray-800">
             Faça o login{" "}
@@ -48,26 +48,26 @@ const Login = () => {
               placeholder="Insira o CNPJ"
               value={cnpj}
               onChange={(e) => setCNPJ(e.target.value)}
-              className="text-black w-full mb-4 p-3 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="text-black w-full mb-4 p-3 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
             <input
               type="text"
               placeholder="Insira o login"
               value={login}
               onChange={(e) => setLogin(e.target.value)}
-              className="text-black w-full mb-4 p-3 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="text-black w-full mb-4 p-3 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
             <input
               type="password"
               placeholder="Insira a senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-              className="text-black w-full mb-6 p-3 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="text-black w-full mb-6 p-3 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
             <div className="flex">
               <button
                 type="submit"
-                className="w-full mr-2 bg-blue-600 text-white font-semibold py-3 rounded-md transition-colors hover:bg-blue-700"
+                className="w-full mr-2 bg-orange-600 text-white font-semibold py-3 rounded-md transition-colors hover:bg-orange-700"
               >
                 Efetuar Login
               </button>

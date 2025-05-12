@@ -25,8 +25,7 @@ export default function AppRoutes() {
 
         {/* Routes only for admins */}
         <Route element={<AdminRoute />}>
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />          
         </Route>
       </Routes>
     </Router>

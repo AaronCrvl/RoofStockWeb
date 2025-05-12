@@ -1,29 +1,21 @@
-import api from './api.services';
-import { getBaseUrl } from '../../Utils/integration.utils';
+import api from "./api.services";
+import { toast } from "react-toastify";
 
 export const Authenticate = async (data) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      console.log("Let's authenticate");
-      console.log(`${getBaseUrl()}/Autenticacao/Autenticar`);
+  try {
+    const response = await api.post("/Autenticacao/Autenticar", {
+      login: data.login,
+      senha: data.senha,
+    });
 
-      const response = await api.post('/Autenticacao/Autenticar', {
-        login: 'testeeeeeee',
-        senha: 'senhatesteeeeeee',
-      });
-
-      if (response.ok) {
-        console.log(`Res: ${response}`);
-        resolve(response);
-      } else if (response.status === 401) {
-        reject('Não autorizado. Verifique suas credenciais.');
-      } else {
-        const error = await response.text();
-        reject(`Erro: ${error}`);
-      }
-    } catch (err) {
-      console.error('Auth Error: ' + err);
-      reject();
+    if (response.ok) {
+      var token = await response.json();
+      localStorage.setItem("token", token);
+    } else {
+      toast.error(`Erro: ${await response.text()}`);
     }
-  });
+  } catch (err) {
+    console.error("Error getting stock by supervisor ID:", err);
+    toast(err);
+  }
 };

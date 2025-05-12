@@ -6,8 +6,7 @@ const UserContext = createContext();
 // Provider component
 export default function UserProvider({ children }) {
   const [logged, setLogged] = useState(false);
-  const [userId, setUserId] = useState(null);
-  const [token, setToken] = useState('');
+  const [userId, setUserId] = useState(null);  
   const [admin, setAdmin] = useState(false);
 
   const value = {
@@ -15,8 +14,6 @@ export default function UserProvider({ children }) {
     setLogged,
     userId,
     setUserId,
-    token,
-    setToken,
     admin,
     setAdmin,
   };

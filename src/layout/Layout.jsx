@@ -1,11 +1,20 @@
 import React from "react";
-import TopBar from "../components/TopBar";
+import SideNav from "../components/SideNav";
+import Footer from "../components/Footer";
 
 function Layout({ children }) {
   return (
-    <div>      
-      {children}
-    </div>
+    <>
+      <div className="flex">
+        <div className="h-screen w-min">
+          <SideNav />
+        </div>
+        <div className="w-full">
+          {children}
+          <Footer />
+        </div>
+      </div>
+    </>
   );
 }
 

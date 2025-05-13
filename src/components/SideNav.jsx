@@ -69,7 +69,10 @@ function SideNav() {
             ),
           },
         ].map((item, index) => (
-          <div className="block mt-10 hover:border-t-2 hover:shadow-xl hover:border-b-2 hover:border-gray-400 hover:cursor-pointer w-full hover:scale-125 transition delay-50 duration-300 ease-in-out">
+          <div
+            key={index}
+            className="block mt-10 hover:border-t-2 hover:shadow-xl hover:border-b-2 hover:border-gray-400 hover:cursor-pointer w-full hover:scale-125 transition delay-50 duration-300 ease-in-out"
+          >
             <div className="flex  rounded-lg p-2">
               <div>{item.icon}</div>
               <span key={index} className="ml-4 place-self-start block">
@@ -84,18 +87,18 @@ function SideNav() {
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
-          stroke-width="1.5"
+          strokeWidth="1.5"
           stroke="currentColor"
-          class="w-6 h-6"
+          className="w-6 h-6"
         >
           <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894a1.125 1.125 0 001.356.9l.893-.23a1.125 1.125 0 011.37.812l.26 1.04c.13.52-.06 1.07-.485 1.39l-.737.546a1.125 1.125 0 000 1.787l.737.546c.424.32.615.87.485 1.39l-.26 1.04c-.15.6-.77.96-1.37.812l-.893-.23a1.125 1.125 0 00-1.356.9l-.149.894c-.09.542-.56.94-1.11.94h-1.093c-.55 0-1.02-.398-1.11-.94l-.149-.894a1.125 1.125 0 00-1.356-.9l-.893.23c-.6.15-1.22-.212-1.37-.812l-.26-1.04a1.125 1.125 0 01.485-1.39l.737-.546a1.125 1.125 0 000-1.787l-.737-.546a1.125 1.125 0 01-.485-1.39l.26-1.04a1.125 1.125 0 011.37-.812l.893.23a1.125 1.125 0 001.356-.9l.149-.894z"
           />
           <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
           />
         </svg>

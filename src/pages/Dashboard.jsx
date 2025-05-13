@@ -11,8 +11,8 @@ import {
 import { getStockByUser } from "../services/api/stock.service";
 import { getStockProducts } from "../services/api/stockProduct.services";
 import ProductModal from "../components/Product/ProductModal";
-import Footer from "../components/Footer";
 import Layout from "../layout/Layout";
+import { dateDiffForProductExpireDate } from "../utils/dateFunctions.util";
 
 const STOCKS_LIST = [
   {
@@ -67,42 +67,49 @@ const STOCKS_LIST = [
 const PRODUCT_LIST = [
   {
     idProduto: 0,
+    idEstoque: 1,
     nomeProduto: "Produto A",
     dataValidade: "2025-05-01",
     nomeResponsavel: "Paola",
-    valor: "R$ 15,00",
+    valor: 15,
+    quantidade: 50,
     nomeMarca: "Coca-Cola",
     tipoProduto: 0,
     promocao: true,
   },
   {
     idProduto: 1,
+    idEstoque: 1,
     nomeProduto: "Produto B",
     dataValidade: "2025-07-15",
     nomeResponsavel: "Lucas",
     nomeMarca: "Pepsi",
     tipoProduto: 0,
-    valor: "R$ 10,00",
+    quantidade: 50,
+    valor: 10,
     promocao: false,
   },
   {
     idProduto: 2,
+    idEstoque: 1,
     nomeProduto: "Produto C",
     dataValidade: "2025-06-30",
     nomeResponsavel: "Ana",
     nomeMarca: "Tanqueray",
     tipoProduto: 0,
-    valor: "R$ 200,00",
+    quantidade: 50,
+    valor: 200,
     promocao: true,
   },
 ];
 
 const Dashboard = () => {
-  const { appCompanyId } = useCompany();
+  const { companyId } = useCompany();
   const { userId } = useUser();
 
   const [stocks, setStocks] = useState(STOCKS_LIST);
   const [stocksOverview, setStocksOverview] = useState(STOCKS_LIST[0]);
+  const [selectedStock, setSelectedStock] = useState(null);
   const [products, setProducts] = useState(PRODUCT_LIST);
   const [productsGridView, setProductsGridView] = useState(PRODUCT_LIST);
   const [viewProductModal, setViewProductModal] = useState(false);
@@ -114,7 +121,7 @@ const Dashboard = () => {
       setStocks(getStockByUser(userId));
       setStocksOverview(stocks[0]);
     }
-  }, [stocks, appCompanyId, userId]);
+  }, [stocks, companyId, userId]);
 
   useEffect(() => {
     if (products == null && stocks != null)
@@ -122,8 +129,8 @@ const Dashboard = () => {
   }, [products, stocks]);
 
   const handleStockSelection = (e) => {
-    const selectedStockId = e.target.value;
-    const item = stocks.find((stock) => stock.idEstoque == selectedStockId);
+    setSelectedStock(e.target.value);
+    const item = stocks.find((stock) => stock.idEstoque == selectedStock);
     setStocksOverview({
       ...stocksOverview,
       nomeEstoque: item.nomeEstoque,
@@ -170,22 +177,66 @@ const Dashboard = () => {
 
   const postSaveProduct = (product, isNew) => {
     if (isNew) {
-      setProducts([...products, product]);
-      setProductsGridView([...products, product]);
-    } else {
-      products.map((prod) => {
-        prod.idProduto == product.idProduto
+      const newList = [...products, product];
+      setProducts(newList);
+      setProductsGridView(newList);
+
+      const stockOverViewUpated = stocks.map((stock) =>
+        stock.idEstoque == product.idEstoque
           ? {
-              idProduto: prod.idProduto,
+              ...stock,
+              overviewDiario: {
+                produtosEmEstoque: stock.overviewDiario.produtosEmEstoque,
+                entradasHoje: stock.overviewDiario.entradasHoje + 1,
+                promocoesAtivas: product.promocao
+                  ? stock.overviewDiario.promocoesAtivas + 1
+                  : stock.overviewDiario.entradasHoje,
+                vencimentosProximos:
+                  dateDiffForProductExpireDate(
+                    new Date(),
+                    product.dataValidade
+                  ) > 14
+                    ? stock.overviewDiario.vencimentosProximos
+                    : stock.overviewDiario.vencimentosProximos + 1,
+              },
+            }
+          : stock
+      );
+
+      setStocks(stockOverViewUpated);
+
+      const selectedStock = stocks.find(
+        (stock) => stock.idEstoque == stocksOverview.idEstoque
+      );
+      setStocksOverview(selectedStock);
+    } else {
+      const updatedProductList = products.map((prod) =>
+        prod.idProduto === product.idProduto
+          ? {
+              ...prod,
+              idProduto: product.idProduto,
               nomeProduto: product.nomeProduto,
               idMarca: product.idMarca,
               valor: product.valor,
               promocao: product.promocao,
             }
-          : prod;
-      });
-      setProductsGridView([...products]);
+          : prod
+      );
+
+      setProducts(updatedProductList);
+      setProductsGridView(updatedProductList);
     }
+
+    handleProductModal(false, null);
+  };
+
+  const postDeleteProduct = (product) => {
+    const newProductList = products.filter(
+      (prod) => prod.idProduto !== product.idProduto
+    );
+
+    setProducts(newProductList);
+    setProductsGridView(newProductList);
   };
 
   return (
@@ -334,7 +385,7 @@ const Dashboard = () => {
                 <div className="grid grid-cols-6 gap-6 mb-1 text-black bg-gray-200 p-2 rounded-lg font-semibold">
                   <div>Produto</div>
                   <div>Validade</div>
-                  <div>Responsável</div>
+                  <div>Quantidade em Estoque</div>
                   <div>Valor</div>
                   <div>Promoção</div>
                   <div>Ações</div>
@@ -352,8 +403,13 @@ const Dashboard = () => {
                           {product.nomeProduto}
                         </div>
                         <div>{product.dataValidade}</div>
-                        <div>{product.nomeResponsavel}</div>
-                        <div>{product.valor}</div>
+                        <div>{product.quantidade}</div>
+                        <div>
+                          {"R$".concat(
+                            " ",
+                            parseFloat(product.valor).toFixed(2)
+                          )}
+                        </div>
                         <div
                           className={
                             product.promocao
@@ -389,15 +445,20 @@ const Dashboard = () => {
                         product={
                           isNewProduct
                             ? {
-                                idProduto: 0,
+                                idProduto:
+                                  Math.max(
+                                    ...products.map((prod) => prod.idProduto)
+                                  ) + 1,
                                 nomeProduto: "",
-                                idMarca: "",
+                                idMarca: 0,
                                 valor: 0,
+                                quantidade: 0,
                                 promocao: false,
                               }
                             : selectedProduct
                         }
                         postSaveFunc={postSaveProduct}
+                        postDeleteFunc={postDeleteProduct}
                       />
                     </>
                   )}
@@ -405,7 +466,7 @@ const Dashboard = () => {
               </>
             </div>
           </div>
-        </PageContainer.Body>             
+        </PageContainer.Body>
       </PageContainer.Root>
     </Layout>
   );

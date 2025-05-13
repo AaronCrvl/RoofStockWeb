@@ -8,6 +8,7 @@ function ProductModal({
   product,
   closeFunc,
   postSaveFunc,
+  postDeleteFunc,
 }) {
   const [formData, setFormData] = useState({
     idProduto: product.idProduto,
@@ -15,6 +16,7 @@ function ProductModal({
     idMarca: product.idMarca,
     valor: product.valor,
     quantidade: 0,
+    dataValidade: new Date().getDate(),
     promocao: product.promocao,
   });
 
@@ -22,54 +24,109 @@ function ProductModal({
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name == "idMarca" ? 1 : value,
     }));
   };
 
+  const validateFieldsOnSubmit = () => {
+    var error = "";
+
+    if (formData.nomeProduto.length < 3)
+      error = "O campo de nome do produto deve ter no mínimo 3 caracteres.";
+    if (formData.idMarca == 0) error = "Escolha uma marca para o produto.";
+    if (formData.valor <= 0) error = "O valor tem que ser maior que 0.";
+    if (formData.quantidade == 0) error = "A quantidade deve ser maior que 0.";
+    if (formData.dataValidade == new Date().getDate())
+      error = "A data de validade não pode ser a data atual";
+
+    if (error.length > 0) {
+      toast.warn(error);
+      return false;
+    }
+
+    return true;
+  };
+
   const onSubmitProduct = () => {
-    if (
-      formData.nomeProduto &&
-      formData.idMarca &&
-      formData.promocao &&
-      formData.valor
-    ) {
-      if (isNewProduct) {
-        new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(
-              new Response(JSON.stringify("Produtos carregados com sucesso."), {
-                status: 200, // Ok
-                headers: {
-                  "Content-Type": "application/json; utf-8",
-                },
-              })
-            );
-          }, 2000);
-        });
+    try {
+      if (validateFieldsOnSubmit()) {
+        if (isNewProduct) {
+          new Promise((resolve) => {
+            setTimeout(() => {
+              resolve(
+                new Response(JSON.stringify("Produtos criado com sucesso."), {
+                  status: 200, // Ok
+                  headers: {
+                    "Content-Type": "application/json; utf-8",
+                  },
+                })
+              );
+            }, 2000);
+          });
 
-        postSaveFunc(formData, isNewProduct);
-        toast.success("Produto adicionado com sucesso.");
+          console.log("Child trigger post save.");
+          postSaveFunc(formData, isNewProduct);
+          toast.success("Produto adicionado com sucesso.");
+        } else {
+          new Promise((resolve) => {
+            setTimeout(() => {
+              resolve(
+                new Response(
+                  JSON.stringify("Produto atualizado com sucesso."),
+                  {
+                    status: 200, // Ok
+                    headers: {
+                      "Content-Type": "application/json; utf-8",
+                    },
+                  }
+                )
+              );
+            }, 2000);
+          });
+
+          toast.success("Produto atualizado com sucesso.");
+        }
       } else {
-        new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(
-              new Response(JSON.stringify("Produtos carregados com sucesso."), {
-                status: 200, // Ok
-                headers: {
-                  "Content-Type": "application/json; utf-8",
-                },
-              })
-            );
-          }, 2000);
-        });
-
-        toast.success("Produto atualizado com sucesso.");
+        toast.error("Preencha todos os campos para salvar o produto.");
       }
+    } catch (e) {
+      toast.error(
+        "Erro ao tentar".concat(
+          " ",
+          isNewProduct ? "salvar" : "editar",
+          "produto."
+        )
+      );
+      console.log(
+        "Erro ao tentar".concat(
+          " ",
+          isNewProduct ? "salvar" : "editar",
+          "produto: ",
+          e
+        )
+      );
+    }
+  };
 
-      postSaveFunc(formData, isNewProduct);
-      postSaveFunc(formData);
-    } else {
-      toast.error("Preencha todos os campos para salvar o produto.");
+  const onDeleteProduct = () => {
+    try {
+      new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(
+            new Response(JSON.stringify("Produto removido com sucesso."), {
+              status: 200, // Ok
+              headers: {
+                "Content-Type": "application/json; utf-8",
+              },
+            })
+          );
+        }, 2000);
+      });
+
+      postDeleteFunc(formData);
+    } catch (e) {
+      toast.error("Erro ao tentar remover produto");
+      console.log("Erro ao tentar remover produto: ".concat(e));
     }
   };
 
@@ -90,7 +147,6 @@ function ProductModal({
           <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div className="sm:flex sm:items-start">
-                
                 <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -157,7 +213,6 @@ function ProductModal({
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Valor Unitário
                         </label>
-
                         <input
                           name="valor"
                           type="number"
@@ -170,10 +225,31 @@ function ProductModal({
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Quantidade
                         </label>
+                        {isNewProduct ? (
+                          <></>
+                        ) : (
+                          <span className="text-xs font-semibold text-black/50">
+                            (Utilize a tela de movimentações para alterar as
+                            quantidades de produtos existentes)
+                          </span>
+                        )}
                         <input
                           name="quantidade"
                           type="number"
+                          readOnly={isNewProduct ? false : true}
                           value={formData.quantidade}
+                          onChange={handleFormDataValuesChange}
+                          className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                        />
+                      </div>
+                      <div className="mt-10">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Data de Validade
+                        </label>
+                        <input
+                          name="dataValidade"
+                          type="date"
+                          value={formData.dataValidade}
                           onChange={handleFormDataValuesChange}
                           className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
                         />
@@ -215,6 +291,7 @@ function ProductModal({
               <button
                 type="button"
                 className="w-full rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
+                onClick={onDeleteProduct}
               >
                 Excluir
               </button>

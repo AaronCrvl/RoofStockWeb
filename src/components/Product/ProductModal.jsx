@@ -1,6 +1,6 @@
 import React from "react";
-import { useState } from "react";
 import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
 
 function ProductModal({
   title,
@@ -10,98 +10,69 @@ function ProductModal({
   postSaveFunc,
   postDeleteFunc,
 }) {
-  const [formData, setFormData] = useState({
-    idProduto: product.idProduto,
-    nomeProduto: product.nomeProduto,
-    idMarca: product.idMarca,
-    valor: product.valor,
-    quantidade: 0,
-    dataValidade: new Date().getDate(),
-    promocao: product.promocao,
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      idProduto: product.idProduto,
+      nomeProduto: product.nomeProduto,
+      idMarca: product.idMarca,
+      valor: product.valor,
+      quantidade: 0,
+      dataValidade: new Date().getDate(),
+      promocao: product.promocao,
+    },
   });
 
-  const handleFormDataValuesChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: name == "idMarca" ? 1 : value,
-    }));
-  };
-
-  const validateFieldsOnSubmit = () => {
-    var error = "";
-
-    if (formData.nomeProduto.length < 3)
-      error = "O campo de nome do produto deve ter no mínimo 3 caracteres.";
-    if (formData.idMarca == 0) error = "Escolha uma marca para o produto.";
-    if (formData.valor <= 0) error = "O valor tem que ser maior que 0.";
-    if (formData.quantidade == 0) error = "A quantidade deve ser maior que 0.";
-    if (formData.dataValidade == new Date().getDate())
-      error = "A data de validade não pode ser a data atual";
-
-    if (error.length > 0) {
-      toast.warn(error);
-      return false;
-    }
-
-    return true;
-  };
-
-  const onSubmitProduct = () => {
+  const onSubmitProduct = (data) => {
     try {
-      if (validateFieldsOnSubmit()) {
-        if (isNewProduct) {
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve(
-                new Response(JSON.stringify("Produtos criado com sucesso."), {
-                  status: 200, // Ok
-                  headers: {
-                    "Content-Type": "application/json; utf-8",
-                  },
-                })
-              );
-            }, 2000);
-          });
-
-          console.log("Child trigger post save.");
-          postSaveFunc(formData, isNewProduct);
-          toast.success("Produto adicionado com sucesso.");
-        } else {
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve(
-                new Response(
-                  JSON.stringify("Produto atualizado com sucesso."),
-                  {
-                    status: 200, // Ok
-                    headers: {
-                      "Content-Type": "application/json; utf-8",
-                    },
-                  }
-                )
-              );
-            }, 2000);
-          });
-
-          toast.success("Produto atualizado com sucesso.");
-        }
+      if (isNewProduct) {
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(
+              new Response(JSON.stringify("Produtos criado com sucesso."), {
+                status: 200, // Ok
+                headers: {
+                  "Content-Type": "application/json; utf-8",
+                },
+              })
+            );
+          }, 2000);
+        });
+      
+        postSaveFunc(data, isNewProduct);
+        toast.success("Produto adicionado com sucesso.");
       } else {
-        toast.error("Preencha todos os campos para salvar o produto.");
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(
+              new Response(JSON.stringify("Produto atualizado com sucesso."), {
+                status: 200, // Ok
+                headers: {
+                  "Content-Type": "application/json; utf-8",
+                },
+              })
+            );
+          }, 2000);
+        });
+
+        toast.success("Produto atualizado com sucesso.");
       }
     } catch (e) {
       toast.error(
         "Erro ao tentar".concat(
           " ",
           isNewProduct ? "salvar" : "editar",
-          "produto."
+          " produto."
         )
       );
       console.log(
         "Erro ao tentar".concat(
           " ",
           isNewProduct ? "salvar" : "editar",
-          "produto: ",
+          " produto: ",
           e
         )
       );
@@ -122,8 +93,9 @@ function ProductModal({
           );
         }, 2000);
       });
-
-      postDeleteFunc(formData);
+      
+      toast.success("Produto removido com sucesso.");
+      postDeleteFunc(product.idProduto);
     } catch (e) {
       toast.error("Erro ao tentar remover produto");
       console.log("Erro ao tentar remover produto: ".concat(e));
@@ -142,7 +114,10 @@ function ProductModal({
         aria-hidden="true"
       ></div>
 
-      <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <form
+        className="fixed inset-0 z-10 w-screen overflow-y-auto"
+        onSubmit={handleSubmit(onSubmitProduct)}
+      >
         <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
           <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -189,10 +164,17 @@ function ProductModal({
                         <input
                           name="nomeProduto"
                           type="text"
-                          value={formData.nomeProduto}
-                          onChange={handleFormDataValuesChange}
+                          {...register("nomeProduto", {
+                            required: "O nome do produto é obrigatório.",
+                            minLength: 3,
+                          })}
                           className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
                         />
+                        {errors.nomeProduto && (
+                          <p className="text-red-600">
+                            {errors.nomeProduto.message}
+                          </p>
+                        )}
                       </div>
                       <div className="mt-10">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -200,14 +182,21 @@ function ProductModal({
                         </label>
                         <select
                           name="idMarca"
-                          value={formData.idMarca}
-                          onChange={handleFormDataValuesChange}
+                          {...register("idMarca", {
+                            required:
+                              "A seleção da marca do produto é obrigatória.",
+                          })}
                           className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
                         >
                           <option>1</option>
                           <option>2</option>
                           <option>3</option>
                         </select>
+                        {errors.idMarca && (
+                          <p className="text-red-600">
+                            {errors.idMarca.message}
+                          </p>
+                        )}
                       </div>
                       <div className="mt-10">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -216,10 +205,18 @@ function ProductModal({
                         <input
                           name="valor"
                           type="number"
-                          value={formData.valor}
-                          onChange={handleFormDataValuesChange}
+                          {...register("valor", {
+                            required: "O valor é obrigatório.",
+                            min: {
+                              value: 1,
+                              message: "O valor deve ser maior que zero.",
+                            },
+                          })}
                           className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
                         />
+                        {errors.valor && (
+                          <p className="text-red-600">{errors.valor.message}</p>
+                        )}
                       </div>
                       <div className="mt-10">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -237,10 +234,20 @@ function ProductModal({
                           name="quantidade"
                           type="number"
                           readOnly={isNewProduct ? false : true}
-                          value={formData.quantidade}
-                          onChange={handleFormDataValuesChange}
+                          {...register("quantidade", {
+                            required: "A quantidade é obrigatória.",
+                            min: {
+                              value: 1,
+                              message: "A quantidade deve ser maior que zero.",
+                            },
+                          })}
                           className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
                         />
+                        {errors.quantidade && (
+                          <p className="text-red-600">
+                            {errors.quantidade.message}
+                          </p>
+                        )}
                       </div>
                       <div className="mt-10">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -249,22 +256,24 @@ function ProductModal({
                         <input
                           name="dataValidade"
                           type="date"
-                          value={formData.dataValidade}
-                          onChange={handleFormDataValuesChange}
+                          {...register("dataValidade", {
+                            required: "A data de validade é obrigatória.",
+                          })}
                           className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
                         />
+                        {errors.dataValidade && (
+                          <p className="text-red-600">
+                            {errors.dataValidade.message}
+                          </p>
+                        )}
                       </div>
                       <div className="mt-6 flex items-center gap-2">
                         <input
                           name="promocao"
                           type="checkbox"
-                          checked={formData.promocao}
-                          onChange={(e) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              promocao: e.target.checked,
-                            }))
-                          }
+                          {...register("promocao", {
+                            value: false,
+                          })}
                           className="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500"
                         />
                         <label
@@ -273,6 +282,11 @@ function ProductModal({
                         >
                           Promoção
                         </label>
+                        {errors.promocao && (
+                          <p className="text-red-600">
+                            {errors.promocao.message}
+                          </p>
+                        )}
                       </div>
                     </>
                   </div>
@@ -282,9 +296,8 @@ function ProductModal({
 
             <div className="flex bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
               <button
-                type="button"
-                className="w-full rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
-                onClick={onSubmitProduct}
+                type="submit"
+                className="w-full rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"                
               >
                 Salvar
               </button>
@@ -298,7 +311,7 @@ function ProductModal({
             </div>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

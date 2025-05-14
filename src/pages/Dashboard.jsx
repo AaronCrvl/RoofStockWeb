@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useCompany } from "../contexts/CompanyContext";
 import { useUser } from "../contexts/UserContext";
 import { PageContainer } from "../components/PageContainer/index";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
@@ -13,6 +12,7 @@ import { getStockProducts } from "../services/api/stockProduct.services";
 import ProductModal from "../components/Product/ProductModal";
 import Layout from "../layout/Layout";
 import { dateDiffForProductExpireDate } from "../utils/dateFunctions.util";
+import StockControl from "../components/StockControl";
 
 const STOCKS_LIST = [
   {
@@ -103,13 +103,11 @@ const PRODUCT_LIST = [
   },
 ];
 
-const Dashboard = () => {
-  const { companyId } = useCompany();
+const Dashboard = () => {  
   const { userId } = useUser();
 
   const [stocks, setStocks] = useState(STOCKS_LIST);
-  const [stocksOverview, setStocksOverview] = useState(STOCKS_LIST[0]);
-  const [selectedStock, setSelectedStock] = useState(null);
+  const [stocksOverview, setStocksOverview] = useState(STOCKS_LIST[0]);  
   const [products, setProducts] = useState(PRODUCT_LIST);
   const [productsGridView, setProductsGridView] = useState(PRODUCT_LIST);
   const [viewProductModal, setViewProductModal] = useState(false);
@@ -121,16 +119,15 @@ const Dashboard = () => {
       setStocks(getStockByUser(userId));
       setStocksOverview(stocks[0]);
     }
-  }, [stocks, companyId, userId]);
+  }, [stocks, userId]);
 
   useEffect(() => {
     if (products == null && stocks != null)
       setProducts(getStockProducts(stocks[0].idEstoque));
   }, [products, stocks]);
 
-  const handleStockSelection = (e) => {
-    setSelectedStock(e.target.value);
-    const item = stocks.find((stock) => stock.idEstoque == selectedStock);
+  const handleStockSelection = (childStockSelect) => {    
+    const item = stocks.find((stock) => stock.idEstoque == childStockSelect);
     setStocksOverview({
       ...stocksOverview,
       nomeEstoque: item.nomeEstoque,
@@ -230,34 +227,24 @@ const Dashboard = () => {
     handleProductModal(false, null);
   };
 
-  const postDeleteProduct = (product) => {
+  const postDeleteProduct = (idProduto) => {
     const newProductList = products.filter(
-      (prod) => prod.idProduto !== product.idProduto
+      (prod) => prod.idProduto !== idProduto
     );
 
     setProducts(newProductList);
     setProductsGridView(newProductList);
+    handleProductModal(false, null);
   };
 
   return (
     <Layout>
       <PageContainer.Root>
         <PageContainer.Header title={"Dashboard"}>
-          <div className="mb-8">
-            <label className="block text-gray-800 text-lg font-semibold mb-2">
-              Selecionar Estoque:
-            </label>
-            <select
-              onChange={handleStockSelection}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900"
-            >
-              {stocks.map((item) => (
-                <option key={item.idEstoque} value={item.idEstoque}>
-                  {item.nomeEstoque}
-                </option>
-              ))}
-            </select>
-          </div>
+          <StockControl
+            parentStocks={stocks}
+            stockSelectionFunc={handleStockSelection}
+          />
         </PageContainer.Header>
 
         <PageContainer.Body>

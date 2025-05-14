@@ -25,8 +25,7 @@ export const getStockByUser = async (idUser) => {
     );
 
     if (response.ok) {
-      const data =  await response.json();
-      console.log("getStockByUser returned: ".concat(data));
+      const data =  await response.json();      
       return data;
     } else {
       toast.error(`Erro: ${await response.text()}`);

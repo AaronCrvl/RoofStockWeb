@@ -1,10 +1,16 @@
 import api from "./api.services";
 import { toast } from "react-toastify";
 
+const route = "/Stock";
+
 // GET - Get stock by ID
 export const getStockById = async (id) => {
   try {
-    const response = await api.get(`/Estoque/ObterEstoque/${id}`);
+    const response = await api.get(`${route}/Get?`, {
+      params: {
+        id: id,
+      },
+    });
 
     if (response.ok) {
       return await response.json();
@@ -12,7 +18,7 @@ export const getStockById = async (id) => {
       toast.error(`Erro: ${await response.text()}`);
     }
   } catch (err) {
-    console.error("Error getting stock by supervisor ID:", err);
+    console.error("Error getting stock by ID:", err);
     toast(err);
   }
 };
@@ -20,44 +26,26 @@ export const getStockById = async (id) => {
 // GET - Get stocks that user have access
 export const getStockByUser = async (idUser) => {
   try {
-    const response = await api.get(
-      `/Estoque/ObterEstoquePorUsuario?idUsuario=${idUser}`
-    );
+    const response = await api.get(`${route}/GetByUser`, {
+      params: { idUser: idUser },
+    });
 
     if (response.ok) {
-      const data =  await response.json();      
+      const data = await response.json();
       return data;
     } else {
       toast.error(`Erro: ${await response.text()}`);
     }
   } catch (err) {
-    console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
-  }
-};
-
-// GET - Get stock by name
-export const getStockByName = async (stockName) => {
-  try {    
-    const response = await api.get(
-      `/Estoque/ObterEstoquePorNome/${encodeURIComponent(stockName)}`
-    );
-
-    if (response.ok) {
-      return await response.json();
-    } else {
-      toast.error(`Erro: ${await response.text()}`);
-    }
-  } catch (err) {
-    console.error("Error getting stock by supervisor ID:", err);
+    console.error("Error getting stock by user ID:", err);
     toast(err);
   }
 };
 
 // POST - Create new stock
 export const createStock = async (newStock) => {
-  try {    
-    const response = await api.post("/Estoque/CriarEstoque", newStock);
+  try {
+    const response = await api.post(`${route}/Create`, newStock);
 
     if (response.ok) {
       return await response.json();
@@ -72,11 +60,12 @@ export const createStock = async (newStock) => {
 
 // PUT - Update stock
 export const updateStock = async (id, updatedStock) => {
-  try {    
-    const response = await api.put(
-      `/Estoque/AlterarEstoque/${id}`,
-      updatedStock
-    );
+  try {
+    const response = await api.patch(`${route}/Alter`, updatedStock, {
+      params: {
+        id: id,
+      },
+    });
 
     if (response.ok) {
       return await response.json();
@@ -91,8 +80,12 @@ export const updateStock = async (id, updatedStock) => {
 
 // DELETE - Delete stock
 export const deleteStock = async (id) => {
-  try {    
-    const response = await api.delete(`/Estoque/ExcluirEstoque/${id}`);
+  try {
+    const response = await api.delete(`${route}/Delete`, {
+      params: {
+        id: id,
+      },
+    });
 
     if (response.ok) {
       return await response.json();
@@ -107,8 +100,12 @@ export const deleteStock = async (id) => {
 
 // PUT - Deactivate stock
 export const deactivateStock = async (id) => {
-  try {    
-    const response = await api.put(`/Estoque/DesativarEstoque/${id}`);
+  try {
+    const response = await api.patch(`${route}/Unactivate`, null, {
+      params: {
+        id: id,
+      },
+    });
 
     if (response.ok) {
       return await response.json();
@@ -123,8 +120,12 @@ export const deactivateStock = async (id) => {
 
 // PUT - Activate stock
 export const activateStock = async (id) => {
-  try {    
-    const response = await api.put(`/Estoque/AtivarEstoque/${id}`);
+  try {
+     const response = await api.patch(`${route}/Activate`, null, {
+       params: {
+         id: id,
+       },
+     });
 
     if (response.ok) {
       return await response.json();

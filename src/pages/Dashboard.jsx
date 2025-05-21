@@ -13,6 +13,7 @@ import ProductModal from "../components/Product/ProductModal";
 import Layout from "../layout/Layout";
 import { dateDiffForProductExpireDate } from "../utils/dateFunctions.util";
 import StockControl from "../components/StockControl";
+import { toast } from "react-toastify";
 
 const STOCKS_LIST = [
   {
@@ -103,11 +104,11 @@ const PRODUCT_LIST = [
   },
 ];
 
-const Dashboard = () => {  
+const Dashboard = () => {
   const { userId } = useUser();
 
   const [stocks, setStocks] = useState(STOCKS_LIST);
-  const [stocksOverview, setStocksOverview] = useState(STOCKS_LIST[0]);  
+  const [stocksOverview, setStocksOverview] = useState(STOCKS_LIST[0]);
   const [products, setProducts] = useState(PRODUCT_LIST);
   const [productsGridView, setProductsGridView] = useState(PRODUCT_LIST);
   const [viewProductModal, setViewProductModal] = useState(false);
@@ -126,7 +127,7 @@ const Dashboard = () => {
       setProducts(getStockProducts(stocks[0].idEstoque));
   }, [products, stocks]);
 
-  const handleStockSelection = (childStockSelect) => {    
+  const handleStockSelection = (childStockSelect) => {
     const item = stocks.find((stock) => stock.idEstoque == childStockSelect);
     setStocksOverview({
       ...stocksOverview,
@@ -201,11 +202,11 @@ const Dashboard = () => {
       );
 
       setStocks(stockOverViewUpated);
-
       const selectedStock = stocks.find(
         (stock) => stock.idEstoque == stocksOverview.idEstoque
       );
       setStocksOverview(selectedStock);
+      toast.success("Produto adicionado com sucesso.");
     } else {
       const updatedProductList = products.map((prod) =>
         prod.idProduto === product.idProduto
@@ -222,6 +223,7 @@ const Dashboard = () => {
 
       setProducts(updatedProductList);
       setProductsGridView(updatedProductList);
+      toast.success("Produto atualizado com sucesso.");
     }
 
     handleProductModal(false, null);
@@ -234,6 +236,7 @@ const Dashboard = () => {
 
     setProducts(newProductList);
     setProductsGridView(newProductList);
+    toast.success("Produto removido com sucesso.");
     handleProductModal(false, null);
   };
 

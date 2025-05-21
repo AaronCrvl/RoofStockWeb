@@ -9,6 +9,7 @@ function ProductModal({
   closeFunc,
   postSaveFunc,
   postDeleteFunc,
+  isTransaction = false,
 }) {
   const {
     register,
@@ -16,13 +17,24 @@ function ProductModal({
     formState: { errors },
   } = useForm({
     defaultValues: {
-      idProduto: product.idProduto,
-      nomeProduto: product.nomeProduto,
-      idMarca: product.idMarca,
-      valor: product.valor,
-      quantidade: 0,
-      dataValidade: new Date().getDate(),
-      promocao: product.promocao,
+      idProduto: product == null ? 0 : product.idProduto,
+      nomeProduto: product == null ? "" : product.nomeProduto,
+      idMarca: product == null ? 0 : product.idMarca,
+      valor: product == null ? 0 : product.valor,
+      quantidade: product == null ? 0 : product.quantidade,
+      dataValidade:  product == null ?  new Date()
+        .getFullYear()
+        .toString()
+        .concat(
+          "-",
+          String(new Date().getMonth() + 1).padStart(2, "0"),
+          "-",
+          String(new Date().getDate()).padStart(2, "0")
+        ) : product.dataValidade,
+      promocao: product == null ? false : product.promocao,
+      quantidadeMovimentacao: 0,
+      quebras: 0,
+      cortesias: 0,
     },
   });
 
@@ -41,9 +53,8 @@ function ProductModal({
             );
           }, 2000);
         });
-      
-        postSaveFunc(data, isNewProduct);
-        toast.success("Produto adicionado com sucesso.");
+
+        postSaveFunc(data, isNewProduct);        
       } else {
         new Promise((resolve) => {
           setTimeout(() => {
@@ -56,9 +67,7 @@ function ProductModal({
               })
             );
           }, 2000);
-        });
-
-        toast.success("Produto atualizado com sucesso.");
+        });        
       }
     } catch (e) {
       toast.error(
@@ -94,8 +103,7 @@ function ProductModal({
         }, 2000);
       });
       
-      toast.success("Produto removido com sucesso.");
-      postDeleteFunc(product.idProduto);
+      if (postDeleteFunc != null) postDeleteFunc(product.idProduto);
     } catch (e) {
       toast.error("Erro ao tentar remover produto");
       console.log("Erro ao tentar remover produto: ".concat(e));
@@ -145,7 +153,11 @@ function ProductModal({
                     <button
                       type="button"
                       className="place-self-end rounded-md bg-red-600 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
-                      onClick={() => closeFunc(false, isNewProduct)}
+                      onClick={() =>
+                        isTransaction
+                          ? closeFunc(false)
+                          : closeFunc(false, isNewProduct)
+                      }
                     >
                       Fechar
                     </button>
@@ -157,7 +169,11 @@ function ProductModal({
                     </p>
 
                     <>
-                      <div className="mt-10">
+                      <div
+                        className={"mt-10".concat(
+                          isTransaction ? " opacity-50 " : " opacity-10 "
+                        )}
+                      >
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Nome Produto
                         </label>
@@ -176,12 +192,17 @@ function ProductModal({
                           </p>
                         )}
                       </div>
-                      <div className="mt-10">
+                      <div
+                        className={"mt-10".concat(
+                          isTransaction ? " opacity-50 " : " opacity-10 "
+                        )}
+                      >
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Marca
                         </label>
                         <select
                           name="idMarca"
+                          readOnly={isTransaction ? true : false}
                           {...register("idMarca", {
                             required:
                               "A seleção da marca do produto é obrigatória.",
@@ -198,12 +219,17 @@ function ProductModal({
                           </p>
                         )}
                       </div>
-                      <div className="mt-10">
+                      <div
+                        className={"mt-10".concat(
+                          isTransaction ? " opacity-50 " : " opacity-10 "
+                        )}
+                      >
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Valor Unitário
                         </label>
                         <input
                           name="valor"
+                          readOnly={isTransaction ? true : false}
                           type="number"
                           {...register("valor", {
                             required: "O valor é obrigatório.",
@@ -218,9 +244,13 @@ function ProductModal({
                           <p className="text-red-600">{errors.valor.message}</p>
                         )}
                       </div>
-                      <div className="mt-10">
+                      <div
+                        className={"mt-10".concat(
+                          isTransaction ? " opacity-50 " : " opacity-10 "
+                        )}
+                      >
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Quantidade
+                          Quantidade Em Estoque
                         </label>
                         {isNewProduct ? (
                           <></>
@@ -228,6 +258,13 @@ function ProductModal({
                           <span className="text-xs font-semibold text-black/50">
                             (Utilize a tela de movimentações para alterar as
                             quantidades de produtos existentes)
+                          </span>
+                        )}
+                        {isTransaction ? (
+                          <></>
+                        ) : (
+                          <span className="text-xs font-semibold text-black/50">
+                            Em estoque atualmente : {product.quantidade}
                           </span>
                         )}
                         <input
@@ -249,15 +286,21 @@ function ProductModal({
                           </p>
                         )}
                       </div>
-                      <div className="mt-10">
+                      <div
+                        className={"mt-10".concat(
+                          isTransaction ? " opacity-50 " : " opacity-10 "
+                        )}
+                      >
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Data de Validade
                         </label>
                         <input
                           name="dataValidade"
                           type="date"
+                          readOnly={isTransaction ? true : false}
                           {...register("dataValidade", {
                             required: "A data de validade é obrigatória.",
+                            valueAsDate: true,
                           })}
                           className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
                         />
@@ -267,10 +310,15 @@ function ProductModal({
                           </p>
                         )}
                       </div>
-                      <div className="mt-6 flex items-center gap-2">
+                      <div
+                        className={"mt-6 flex items-center gap-2".concat(
+                          isTransaction ? " opacity-50 " : " opacity-10 "
+                        )}
+                      >
                         <input
                           name="promocao"
                           type="checkbox"
+                          readOnly={isTransaction ? true : false}
                           {...register("promocao", {
                             value: false,
                           })}
@@ -288,6 +336,84 @@ function ProductModal({
                           </p>
                         )}
                       </div>
+
+                      {isTransaction && (
+                        <>
+                          <div className="mt-10">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Quantidade Movimentação
+                            </label>
+                            <input
+                              name="quantidadeMovimentacao"
+                              type="number"
+                              {...register("quantidadeMovimentacao", {
+                                required:
+                                  "A quantidade de movimentação é obrigatória.",
+                                min: {
+                                  value: 1,
+                                  message:
+                                    "A quantidade de movimentação não pode ser menor ou igual a zero.",
+                                },
+                              })}
+                              className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                            />
+                            {errors.quantidadeMovimentacao && (
+                              <p className="text-red-600">
+                                {errors.quantidadeMovimentacao.message}
+                              </p>
+                            )}
+                          </div>
+                          <div className="mt-10">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Quebras
+                            </label>
+                            <input
+                              name="quebras"
+                              type="number"
+                              {...register("quebras", {
+                                required:
+                                  "A quantidade de quebras é obrigatória.",
+                                min: {
+                                  value: 0,
+                                  message:
+                                    "A quantidade de quebras não pode ser negativa.",
+                                },
+                              })}
+                              className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                            />
+                            {errors.quebras && (
+                              <p className="text-red-600">
+                                {errors.quebras.message}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="mt-10">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Cortesias
+                            </label>
+                            <input
+                              name="cortesias"
+                              type="number"
+                              {...register("cortesias", {
+                                required:
+                                  "A quantidade de cortesias é obrigatória.",
+                                min: {
+                                  value: 0,
+                                  message:
+                                    "A quantidade de cortesias não pode ser negativa.",
+                                },
+                              })}
+                              className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                            />
+                            {errors.cortesias && (
+                              <p className="text-red-600">
+                                {errors.cortesias.message}
+                              </p>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </>
                   </div>
                 </div>
@@ -297,17 +423,19 @@ function ProductModal({
             <div className="flex bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
               <button
                 type="submit"
-                className="w-full rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"                
+                className="w-full rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
               >
                 Salvar
               </button>
-              <button
-                type="button"
-                className="w-full rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
-                onClick={onDeleteProduct}
-              >
-                Excluir
-              </button>
+              {postDeleteFunc && (
+                <button
+                  type="button"
+                  className="w-full rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
+                  onClick={onDeleteProduct}
+                >
+                  Excluir
+                </button>
+              )}
             </div>
           </div>
         </div>

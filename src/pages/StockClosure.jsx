@@ -190,7 +190,7 @@ function StockClosure() {
                 <select className="p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-black">
                   <option value="">Selecione a Marca</option>
                 </select>
-              </div>              
+              </div>
               <div className="flex-shrink-0">
                 <button className="ml-4 p-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all duration-300">
                   Filtrar
@@ -205,45 +205,50 @@ function StockClosure() {
                 <span>Itens</span>
               </div>
 
-              {stockClosure.map((closure) => (
-                <details
-                  key={closure.idFechamento}
-                  className="mb-4 border rounded-md shadow-sm bg-white"
-                >
-                  <summary className="grid grid-cols-3 gap-4 p-4 text-gray-900 hover:text-green-600 hover:font-medium transition-all duration-300 cursor-pointer">
-                    <span>
-                      {closure.dataFechamento.toLocaleDateString("pt-BR")}
-                    </span>
-                    <span>{closure.erro ? "Sim" : "Não"}</span>
-                    <span>{closure.itens.length}</span>
-                  </summary>
+              {stockClosure
+                .sort(
+                  (a, b) =>
+                    new Date(b.dataFechamento) - new Date(a.dataFechamento)
+                )
+                .map((closure) => (
+                  <details
+                    key={closure.idFechamento}
+                    className="mb-4 border rounded-md shadow-sm bg-white"
+                  >
+                    <summary className="grid grid-cols-3 gap-4 p-4 text-gray-900 hover:text-green-600 hover:font-medium transition-all duration-300 cursor-pointer">
+                      <span>
+                        {closure.dataFechamento.toLocaleDateString("pt-BR")}
+                      </span>
+                      <span>{closure.erro ? "Sim" : "Não"}</span>
+                      <span>{closure.itens.length}</span>
+                    </summary>
 
-                  <form className="p-5 bg-green-50 rounded-b-md text-gray-800">
-                    <div className="grid grid-cols-6 gap-4 mb-3 font-semibold text-green-900 bg-green-200 p-2 rounded">
-                      <span>Produto</span>
-                      <span>Quantidade Final</span>
-                      <span>Divergência</span>
-                      <span>Quantidade Divergência</span>
-                      <span>Quebras Contabilizadas</span>
-                      <span>Cortesias Contabilizadas</span>
-                    </div>
-
-                    {closure.itens.map((item, index) => (
-                      <div
-                        key={index}
-                        className="grid grid-cols-6 gap-4 p-3 mb-2 text-sm bg-white text-gray-900 rounded shadow-sm border border-gray-200 hover:border-green-400 transition-all duration-200"
-                      >
-                        <span>{item.nomeProduto}</span>
-                        <span>{item.quantidadeFinal}</span>
-                        <span>{item.divergencia ? "Sim" : "Não"}</span>
-                        <span>{item.quantidadeDivergencia}</span>
-                        <span>{item.quebrasContabilizadas}</span>
-                        <span>{item.cortesias}</span>
+                    <form className="p-5 bg-green-50 rounded-b-md text-gray-800">
+                      <div className="grid grid-cols-6 gap-4 mb-3 font-semibold text-green-900 bg-green-200 p-2 rounded">
+                        <span>Produto</span>
+                        <span>Quantidade Final</span>
+                        <span>Divergência</span>
+                        <span>Quantidade Divergência</span>
+                        <span>Quebras Contabilizadas</span>
+                        <span>Cortesias Contabilizadas</span>
                       </div>
-                    ))}
-                  </form>
-                </details>
-              ))}
+
+                      {closure.itens.map((item, index) => (
+                        <div
+                          key={index}
+                          className="grid grid-cols-6 gap-4 p-3 mb-2 text-sm bg-white text-gray-900 rounded shadow-sm border border-gray-200 hover:border-green-400 transition-all duration-200"
+                        >
+                          <span>{item.nomeProduto}</span>
+                          <span>{item.quantidadeFinal}</span>
+                          <span>{item.divergencia ? "Sim" : "Não"}</span>
+                          <span>{item.quantidadeDivergencia}</span>
+                          <span>{item.quebrasContabilizadas}</span>
+                          <span>{item.cortesias}</span>
+                        </div>
+                      ))}
+                    </form>
+                  </details>
+                ))}
             </div>
           </div>
         </PageContainer.Body>

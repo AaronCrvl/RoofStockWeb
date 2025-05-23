@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Footer from "../components/Footer";
+import Footer from "../components/ui/Footer";
 import homeStock from '../assets/images/HomeStock.jpg';
 
 function Home() {

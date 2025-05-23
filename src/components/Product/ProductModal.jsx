@@ -1,6 +1,7 @@
 import React from "react";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
+import { formatdateToInput } from "../../utils/dateFunctions.util";
 
 function ProductModal({
   title,
@@ -22,19 +23,15 @@ function ProductModal({
       idMarca: product == null ? 0 : product.idMarca,
       valor: product == null ? 0 : product.valor,
       quantidade: product == null ? 0 : product.quantidade,
-      dataValidade:  product == null ?  new Date()
-        .getFullYear()
-        .toString()
-        .concat(
-          "-",
-          String(new Date().getMonth() + 1).padStart(2, "0"),
-          "-",
-          String(new Date().getDate()).padStart(2, "0")
-        ) : product.dataValidade,
+      dataValidade:
+        product == null
+          ? formatdateToInput()
+          : product.dataValidade,
       promocao: product == null ? false : product.promocao,
-      quantidadeMovimentacao: 0,
-      quebras: 0,
-      cortesias: 0,
+      quantidadeMovimentacao:
+        product == null ? 0 : product.quantidadeMovimentacao,
+      quebras: product == null ? 0 : product.quebras,
+      cortesias: product == null ? 0 : product.cortesias,
     },
   });
 
@@ -54,7 +51,7 @@ function ProductModal({
           }, 2000);
         });
 
-        postSaveFunc(data, isNewProduct);        
+        postSaveFunc(data, isNewProduct);
       } else {
         new Promise((resolve) => {
           setTimeout(() => {
@@ -67,7 +64,7 @@ function ProductModal({
               })
             );
           }, 2000);
-        });        
+        });
       }
     } catch (e) {
       toast.error(
@@ -102,7 +99,7 @@ function ProductModal({
           );
         }, 2000);
       });
-      
+
       if (postDeleteFunc != null) postDeleteFunc(product.idProduto);
     } catch (e) {
       toast.error("Erro ao tentar remover produto");
@@ -130,7 +127,7 @@ function ProductModal({
           <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div className="sm:flex sm:items-start">
-                <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
+                <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-200 sm:mx-0 sm:size-10">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"

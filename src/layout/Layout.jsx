@@ -1,6 +1,6 @@
 import React from "react";
-import SideNav from "../components/SideNav";
-import Footer from "../components/Footer";
+import SideNav from "../components/ui/SideNav";
+import Footer from "../components/ui/Footer";
 
 function Layout({ children }) {
   return (

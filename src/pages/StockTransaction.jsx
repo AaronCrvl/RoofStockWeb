@@ -11,6 +11,8 @@ import { toast } from "react-toastify";
 import { getStockProducts } from "../services/api/stockProduct.services";
 import { useForm } from "react-hook-form";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
+import MessageModal from "../components/ui/MessageModal";
+import { formatdateToInput } from "../utils/dateFunctions.util";
 
 const STOCK_TRANSACTION = [
   {
@@ -23,7 +25,7 @@ const STOCK_TRANSACTION = [
     itens: [
       {
         idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
+        idMovimentacao: 1,
         idProduto: 1,
         nomeProduto: "Teste",
         quantidadeMovimentacao: 50,
@@ -32,8 +34,8 @@ const STOCK_TRANSACTION = [
         cortesias: 100,
       },
       {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
+        idItemMovimentacao: 1,
+        idMovimentacao: 1,
         idProduto: 2,
         nomeProduto: "Teste 2",
         quantidadeMovimentacao: 50,
@@ -42,8 +44,8 @@ const STOCK_TRANSACTION = [
         cortesias: 100,
       },
       {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
+        idItemMovimentacao: 3,
+        idMovimentacao: 1,
         idProduto: 3,
         nomeProduto: "Teste 3",
         quantidadeMovimentacao: 50,
@@ -52,8 +54,8 @@ const STOCK_TRANSACTION = [
         cortesias: 100,
       },
       {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
+        idItemMovimentacao: 4,
+        idMovimentacao: 1,
         idProduto: 4,
         nomeProduto: "Teste 4",
         quantidadeMovimentacao: 50,
@@ -72,8 +74,8 @@ const STOCK_TRANSACTION = [
     processado: false,
     itens: [
       {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
+        idItemMovimentacao: 34,
+        idMovimentacao: 2,
         idProduto: 1,
         nomeProduto: "Teste",
         quantidadeMovimentacao: 50,
@@ -82,8 +84,8 @@ const STOCK_TRANSACTION = [
         cortesias: 100,
       },
       {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
+        idItemMovimentacao: 98,
+        idMovimentacao: 2,
         idProduto: 2,
         nomeProduto: "Teste 2",
         quantidadeMovimentacao: 50,
@@ -92,8 +94,8 @@ const STOCK_TRANSACTION = [
         cortesias: 100,
       },
       {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
+        idItemMovimentacao: 66,
+        idMovimentacao: 2,
         idProduto: 3,
         nomeProduto: "Teste 3",
         quantidadeMovimentacao: 50,
@@ -102,8 +104,8 @@ const STOCK_TRANSACTION = [
         cortesias: 100,
       },
       {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
+        idItemMovimentacao: 1234,
+        idMovimentacao: 2,
         idProduto: 4,
         nomeProduto: "Teste 4",
         quantidadeMovimentacao: 50,
@@ -122,8 +124,8 @@ const STOCK_TRANSACTION = [
     processado: false,
     itens: [
       {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
+        idItemMovimentacao: 70,
+        idMovimentacao: 3,
         idProduto: 1,
         nomeProduto: "Teste",
         quantidadeMovimentacao: 50,
@@ -132,8 +134,8 @@ const STOCK_TRANSACTION = [
         cortesias: 100,
       },
       {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
+        idItemMovimentacao: 220,
+        idMovimentacao: 3,
         idProduto: 2,
         nomeProduto: "Teste 2",
         quantidadeMovimentacao: 50,
@@ -143,7 +145,7 @@ const STOCK_TRANSACTION = [
       },
       {
         idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
+        idMovimentacao: 3,
         idProduto: 3,
         nomeProduto: "Teste 3",
         quantidadeMovimentacao: 50,
@@ -152,58 +154,8 @@ const STOCK_TRANSACTION = [
         cortesias: 100,
       },
       {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
-        idProduto: 4,
-        nomeProduto: "Teste 4",
-        quantidadeMovimentacao: 50,
-        processado: false,
-        quebras: 5,
-        cortesias: 100,
-      },
-    ],
-  },
-  {
-    idMovimentacao: 4,
-    idEstoque: 1,
-    idUsuario: 1,
-    dataMovimentacao: new Date("2024-12-22"),
-    tipoMovimentacao: 2,
-    processado: false,
-    itens: [
-      {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
-        idProduto: 1,
-        nomeProduto: "Teste",
-        quantidadeMovimentacao: 50,
-        processado: false,
-        quebras: 5,
-        cortesias: 100,
-      },
-      {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
-        idProduto: 2,
-        nomeProduto: "Teste 2",
-        quantidadeMovimentacao: 50,
-        processado: false,
-        quebras: 5,
-        cortesias: 100,
-      },
-      {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
-        idProduto: 3,
-        nomeProduto: "Teste 3",
-        quantidadeMovimentacao: 50,
-        processado: false,
-        quebras: 5,
-        cortesias: 100,
-      },
-      {
-        idItemMovimentacao: 0,
-        //idMovimentacao: 1, Only for backend, won't come in DTO
+        idItemMovimentacao: 5,
+        idMovimentacao: 3,
         idProduto: 4,
         nomeProduto: "Teste 4",
         quantidadeMovimentacao: 50,
@@ -301,6 +253,18 @@ const PRODUCT_LIST = [
     valor: 200,
     promocao: true,
   },
+  {
+    idProduto: 3,
+    idEstoque: 1,
+    nomeProduto: "Produto X",
+    dataValidade: "2025-06-30",
+    nomeResponsavel: "Ana",
+    nomeMarca: "Tanqueray",
+    tipoProduto: 0,
+    quantidade: 50,
+    valor: 200,
+    promocao: true,
+  },
 ];
 
 function StockTransaction() {
@@ -308,21 +272,27 @@ function StockTransaction() {
   const { companyId } = useCompany();
   const [stocks, setStocks] = useState(STOCKS_LIST);
   const [stockTransaction, setStockTransaction] = useState(STOCK_TRANSACTION);
-  const [gridView, setGridView] = useState(STOCK_TRANSACTION);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [products, setProducts] = useState(PRODUCT_LIST);
-  const [openRegisterModal, setOpenRegisterModal] = useState(false);
+  const [gridView, setGridView] = useState(STOCK_TRANSACTION);
+  const [showRegisterModal, setshowRegisterModal] = useState(false);
   const [isEditItem, setIsEditItem] = useState(false);
+  const [transactionItemEdit, setTransactionItemEdit] = useState(null);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageModal, setMessageModal] = useState({
+    message: "",
+    options: [
+      {
+        title: "",
+        color: "",
+        func: () => {},
+      },
+    ],
+  });
+  const [transactionItens, setTransactionItens] = useState(null);
   const { register, getValues } = useForm({
     defaultValues: {
-      dataMovimentacao: new Date()
-        .getFullYear()
-        .toString()
-        .concat(
-          "-",
-          String(new Date().getMonth() + 1).padStart(2, "0"),
-          "-",
-          String(new Date().getDate()).padStart(2, "0")
-        ),
+      dataMovimentacao: formatdateToInput(),
       tipoMovimentacao: 0,
       processado: 0,
     },
@@ -385,7 +355,13 @@ function StockTransaction() {
   };
 
   const handleModalVisibility = (open) => {
-    setOpenRegisterModal(open);
+    setshowRegisterModal(open);
+    setIsEditItem(open);
+    if (!open) {
+      setTransactionItemEdit(null);
+      setTransactionItens(null);
+      setSelectedTransaction(null);
+    }
   };
 
   const handleAddNewTransaction = (newTransaction) => {
@@ -394,9 +370,84 @@ function StockTransaction() {
     toast.success("Movimentação criada com sucesso");
   };
 
-  const handleTransactionItemEdit = () => {
+  const handleTransactionItemEdit = (edit, item) => {
+    if (edit) {
+      var tran = stockTransaction.find(
+        (tran) => tran.idMovimentacao == item.idMovimentacao
+      );
+      setSelectedTransaction(tran);
+      setIsEditItem(true);
+      var prod = products.find((p) => p.idProduto == item.idProduto);
+      var fullItemInfo = {
+        idProduto: prod.idProduto,
+        idEstoque: prod.idEstoque,
+        nomeProduto: prod.nomeProduto,
+        dataValidade: formatdateToInput(prod.dataValidade),
+        nomeResponsavel: prod.nomeResponsavel,
+        valor: prod.valor,
+        quantidade: prod.quantidade,
+        nomeMarca: prod.nomeMarca,
+        tipoProduto: prod.tipoProduto,
+        promocao: prod.promocao,
+        idItemMovimentacao: item.idItemMovimentacao,
+        idMovimentacao: item.idMovimentacao,
+        quantidadeMovimentacao: item.quantidadeMovimentacao,
+        processado: item.processado,
+        quebras: item.quebras,
+        cortesias: item.cortesias,
+      };
+      setTransactionItemEdit(fullItemInfo);
+      var itens = stockTransaction.find(
+        (tran) => tran.idMovimentacao == item.idMovimentacao
+      ).itens;
+      setTransactionItens(itens);
+      handleModalVisibility(true);
+    }
+  };
 
-  }
+  const onItemExclusion = (id) => {
+    const newStockTran = stockTransaction.map((stock) => {
+      return {
+        ...stock,
+        idMovimentacao: stock.idMovimentacao,
+        idEstoque: stock.idEstoque,
+        idUsuario: stock.idUsuario,
+        dataMovimentacao: stock.dataMovimentacao,
+        tipoMovimentacao: stock.idMovimentacao,
+        processado: stock.processado,
+        itens: stock.itens.filter((item) => item.idItemMovimentacao != id),
+      };
+    });
+
+    setStockTransaction(newStockTran);
+    setShowMessageModal(false);
+  };
+
+  const onCancelModalOperation = () => {
+    setIsEditItem(false);
+    handleModalVisibility(false);
+    setTransactionItemEdit(null);
+    setShowMessageModal(false);
+  };
+
+  const handleTransactionItemDeletion = (id) => {
+    setMessageModal({
+      message: "Tem certeza que deseja remover o item da movimentaçao?",
+      options: [
+        {
+          title: "Sim",
+          color: "red",
+          func: () => onItemExclusion(id),
+        },
+        {
+          title: "Nao",
+          color: "green",
+          func: () => onCancelModalOperation(),
+        },
+      ],
+    });
+    setShowMessageModal(true);
+  };
 
   return (
     <Layout>
@@ -408,6 +459,14 @@ function StockTransaction() {
           />
         </PageContainer.Header>
         <PageContainer.Body>
+          <>
+            {showMessageModal && (
+              <MessageModal
+                message={messageModal.message}
+                options={messageModal.options}
+              />
+            )}
+          </>
           <div className="flex bg-white p-4 rounded-lg items-center justify-between mb-4">
             <div className="flex">
               <label className="text-black mr-2">Data da Movimentação</label>
@@ -516,18 +575,26 @@ function StockTransaction() {
                         <span>{item.processado ? "Sim" : "Não"}</span>
                         <span>{item.quantidadeMovimentacao}</span>
                         <div className="flex justify-center items-center space-x-4">
-                          <button
-                            className="p-2 bg-orange-600 rounded-lg hover:bg-orange-700 transition-all duration-300"
+                          <div
+                            className="p-2 bg-blue-600 rounded-lg hover:bg-blue-900 hover:cursor-pointer transition-all duration-300"
                             aria-label="Editar"
+                            onClick={() =>
+                              handleTransactionItemEdit(true, item)
+                            }
                           >
-                            <PencilIcon className="w-6 h-6 text-white" />
-                          </button>
-                          <button
-                            className="p-2 bg-orange-600 rounded-lg hover:bg-orange-700 transition-all duration-300"
-                            aria-label="Editar"
+                            <PencilIcon className="w-3 h-3 text-white" />
+                          </div>
+                          <div
+                            className="p-2 bg-red-600 rounded-lg hover:bg-red-900 hover:cursor-pointer transition-all duration-300"
+                            aria-label="Excluir"
+                            onClick={() =>
+                              handleTransactionItemDeletion(
+                                item.idItemMovimentacao
+                              )
+                            }
                           >
-                            <TrashIcon className="w-6 h-6 text-white" />
-                          </button>
+                            <TrashIcon className="w-3 h-3 text-white" />
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -536,11 +603,14 @@ function StockTransaction() {
               ))}
           </div>
           <>
-            {openRegisterModal && (
+            {showRegisterModal && (
               <TransactionRegisterModal
                 stockId={stockTransaction[0].idEstoque}
+                defautlTransaction={selectedTransaction}
                 isEdit={isEditItem}
+                transactionItemEdit={isEditItem ? transactionItemEdit : null}
                 availableItensList={products}
+                pTransactionItens={transactionItens}
                 postSaveFunc={handleAddNewTransaction}
                 closeFunc={handleModalVisibility}
               />

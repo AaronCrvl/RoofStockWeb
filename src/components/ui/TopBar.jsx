@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useUser } from "../contexts/UserContext";
+import { useUser } from "../../contexts/UserContext";
 // import { useCompany } from '../contexts/CompanyContext';
-import { getCompaniesByUserId } from "../services/api/company.services";
+import { getCompaniesByUserId } from "../../services/api/company.services";
 
 const TopBar = () => {
   // Hooks ------------------------------------->

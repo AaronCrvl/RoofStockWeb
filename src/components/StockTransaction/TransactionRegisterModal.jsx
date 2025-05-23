@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import ProductModal from "../Product/ProductModal";
-// import { useEffect } from "react";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
+import { formatdateToInput } from "../../utils/dateFunctions.util";
 
 function TransactionRegisterModal({
   stockId,
+  defaultTransaction,
+  transactionItemEdit,
   isEdit,
+  pTransactionItens,
   availableItensList,
   closeFunc,
   postSaveFunc,
@@ -14,7 +18,9 @@ function TransactionRegisterModal({
   const [availableProducts] = useState(availableItensList);
   const [itensGridView, setIensGridView] = useState(null);
   const [openItemModal, setOpenItemModal] = useState(false);
-  const [transactionItens, setTransactionItens] = useState([]);
+  const [transactionItens, setTransactionItens] = useState(
+    pTransactionItens == null ? [] : pTransactionItens
+  );
   const [selectedProduct, setSelectedProduct] = useState(null);
   const {
     register,
@@ -23,16 +29,12 @@ function TransactionRegisterModal({
     formState: { errors },
   } = useForm({
     defaultValues: {
-      dataMovimentacao: new Date()
-        .getFullYear()
-        .toString()
-        .concat(
-          "-",
-          String(new Date().getMonth() + 1).padStart(2, "0"),
-          "-",
-          String(new Date().getDate()).padStart(2, "0")
-        ),
-      tipoMivimentacao: 1,
+      dataMovimentacao:
+        defaultTransaction == null
+          ? formatdateToInput()
+          : formatdateToInput(defaultTransaction.dataMovimentacao),
+      tipoMivimentacao:
+        defaultTransaction == null ? 1 : defaultTransaction.tipoMivimentacao,
     },
   });
 
@@ -44,6 +46,13 @@ function TransactionRegisterModal({
   //     )
   //       setIensGridView(...availableProducts);
   //   }, [availableItensList, availableProducts, itensGridView]);
+
+  useEffect(() => {
+    if (isEdit) {
+      setSelectedProduct(transactionItemEdit);
+      handleItemModalVisibility(true);
+    }
+  }, [isEdit, transactionItemEdit]);
 
   const handleItemModalVisibility = (open) => {
     setOpenItemModal(open);
@@ -117,7 +126,7 @@ function TransactionRegisterModal({
           <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div className="sm:flex sm:items-start">
-                <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
+                <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-orange-200 sm:mx-0 sm:size-10">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"

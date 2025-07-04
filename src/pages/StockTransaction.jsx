@@ -246,7 +246,7 @@ const PRODUCT_LIST = [
     idEstoque: 1,
     nomeProduto: "Produto C",
     dataValidade: "2025-06-30",
-    nomeResponsavel: "Ana",
+    nomeResponsavel: "Isabela",
     nomeMarca: "Tanqueray",
     tipoProduto: 0,
     quantidade: 50,
@@ -259,6 +259,18 @@ const PRODUCT_LIST = [
     nomeProduto: "Produto X",
     dataValidade: "2025-06-30",
     nomeResponsavel: "Ana",
+    nomeMarca: "Tanqueray",
+    tipoProduto: 0,
+    quantidade: 50,
+    valor: 200,
+    promocao: true,
+  },
+  {
+    idProduto: 4,
+    idEstoque: 1,
+    nomeProduto: "Produto X11",
+    dataValidade: "2025-06-30",
+    nomeResponsavel: "Julia",
     nomeMarca: "Tanqueray",
     tipoProduto: 0,
     quantidade: 50,
@@ -365,9 +377,30 @@ function StockTransaction() {
   };
 
   const handleAddNewTransaction = (newTransaction) => {
-    var newStockTransactions = [...stockTransaction, newTransaction];
-    setStockTransaction(newStockTransactions);
-    toast.success("Movimentação criada com sucesso");
+    if(isEditItem) {
+      var updatedTransactions = stockTransaction.map((tran) => {
+        return selectedTransaction.idMovimentacao == newTransaction.idMovimentacao
+          ? {
+              ...tran,
+              idMovimentacao: tran.idMovimentacao,
+              idEstoque: tran.idEstoque,
+              idUsuario: tran.idUsuario,
+              dataMovimentacao: tran.dataMovimentacao,
+              tipoMovimentacao: tran.idMovimentacao,
+              processado: newTransaction.processado,
+              itens: newTransaction.itens,
+            }
+          : tran;
+      })
+
+      setStockTransaction(updatedTransactions);
+      setGridView(updatedTransactions);
+    }
+    else {
+      var newStockTransactions = [...stockTransaction, newTransaction];
+      setStockTransaction(newStockTransactions);
+      toast.success("Movimentação criada com sucesso");
+    }
   };
 
   const handleTransactionItemEdit = (edit, item) => {
@@ -377,6 +410,7 @@ function StockTransaction() {
       );
       setSelectedTransaction(tran);
       setIsEditItem(true);
+
       var prod = products.find((p) => p.idProduto == item.idProduto);
       var fullItemInfo = {
         idProduto: prod.idProduto,
@@ -397,6 +431,7 @@ function StockTransaction() {
         cortesias: item.cortesias,
       };
       setTransactionItemEdit(fullItemInfo);
+
       var itens = stockTransaction.find(
         (tran) => tran.idMovimentacao == item.idMovimentacao
       ).itens;
@@ -405,7 +440,7 @@ function StockTransaction() {
     }
   };
 
-  const onItemExclusion = (id) => {
+  const onItemExclusion = (idMov, idItem) => {
     const newStockTran = stockTransaction.map((stock) => {
       return {
         ...stock,
@@ -415,12 +450,16 @@ function StockTransaction() {
         dataMovimentacao: stock.dataMovimentacao,
         tipoMovimentacao: stock.idMovimentacao,
         processado: stock.processado,
-        itens: stock.itens.filter((item) => item.idItemMovimentacao != id),
+        itens:
+          stock.idMovimentacao == idMov
+            ? stock.itens.filter((item) => item.idItemMovimentacao != idItem)
+            : stock.itens,
       };
     });
 
-    setStockTransaction(newStockTran);
-    setShowMessageModal(false);
+    setStockTransaction(newStockTran);       
+    setGridView(newStockTran);        
+    setShowMessageModal(false);    
   };
 
   const onCancelModalOperation = () => {
@@ -430,19 +469,19 @@ function StockTransaction() {
     setShowMessageModal(false);
   };
 
-  const handleTransactionItemDeletion = (id) => {
+  const handleTransactionItemDeletion = (idMov, idItem) => {
     setMessageModal({
       message: "Tem certeza que deseja remover o item da movimentaçao?",
       options: [
         {
-          title: "Sim",
-          color: "red",
-          func: () => onItemExclusion(id),
-        },
-        {
-          title: "Nao",
+          title: "Não",
           color: "green",
           func: () => onCancelModalOperation(),
+        },
+        {
+          title: "Sim",
+          color: "red",
+          func: () => onItemExclusion(idMov, idItem),
         },
       ],
     });
@@ -589,6 +628,7 @@ function StockTransaction() {
                             aria-label="Excluir"
                             onClick={() =>
                               handleTransactionItemDeletion(
+                                item.idMovimentacao,
                                 item.idItemMovimentacao
                               )
                             }
@@ -606,7 +646,7 @@ function StockTransaction() {
             {showRegisterModal && (
               <TransactionRegisterModal
                 stockId={stockTransaction[0].idEstoque}
-                defautlTransaction={selectedTransaction}
+                pDefaultTransaction={selectedTransaction}
                 isEdit={isEditItem}
                 transactionItemEdit={isEditItem ? transactionItemEdit : null}
                 availableItensList={products}

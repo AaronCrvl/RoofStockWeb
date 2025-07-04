@@ -7,7 +7,7 @@ import { formatdateToInput } from "../../utils/dateFunctions.util";
 
 function TransactionRegisterModal({
   stockId,
-  defaultTransaction,
+  pDefaultTransaction,
   transactionItemEdit,
   isEdit,
   pTransactionItens,
@@ -16,7 +16,8 @@ function TransactionRegisterModal({
   postSaveFunc,
 }) {
   const [availableProducts] = useState(availableItensList);
-  const [itensGridView, setIensGridView] = useState(null);
+  const [defaultTransaction] = useState(isEdit ? pDefaultTransaction : null);
+  const [itensGridView, setItensGridView] = useState(null);
   const [openItemModal, setOpenItemModal] = useState(false);
   const [transactionItens, setTransactionItens] = useState(
     pTransactionItens == null ? [] : pTransactionItens
@@ -44,7 +45,7 @@ function TransactionRegisterModal({
   //       availableProducts != null &&
   //       itensGridView == null
   //     )
-  //       setIensGridView(...availableProducts);
+  //       setItensGridView(...availableProducts);
   //   }, [availableItensList, availableProducts, itensGridView]);
 
   useEffect(() => {
@@ -69,20 +70,58 @@ function TransactionRegisterModal({
     handleItemModalVisibility(true);
   };
 
-  const handlePostAddItem = (product) => {
-    var newTransactionItens = [...transactionItens, product];
-    setTransactionItens(newTransactionItens);
-    handleItemModalVisibility(false);
+  const handlePostAddItem = (id, product, isNewProduct) => {
+    try {
+      if (isNewProduct) {
+        var newTransactionItens = [...transactionItens, product];
+        setTransactionItens(newTransactionItens);
+        handleItemModalVisibility(false);
+      } else {
+        var newItemList = transactionItens.map((item) => {
+          return item.idItemMovimentacao == id
+            ? {
+                idItemMovimentacao: item.idItemMovimentacao,
+                idMovimentacao: item.idMovimentacao,
+                idProduto: item.idProduto,
+                nomeProduto: item.nomeProduto,
+                quantidadeMovimentacao: product.quantidadeMovimentacao,
+                processado: product.processado,
+                quebras: product.quebras,
+                cortesias: product.cortesias,
+              }
+            : item;
+        });
+
+        setTransactionItens(newItemList);
+        handleItemModalVisibility(false);
+      }
+    } catch (e) {
+      toast.error(
+        "Erro ao tentar".concat(
+          " ",
+          isNewProduct ? "salvar" : "editar",
+          "item da movimentação."
+        )
+      );
+      console.log(
+        "Erro ao tentar".concat(
+          " ",
+          isNewProduct ? "salvar" : "editar",
+          "item da movimentação.",
+          e
+        )
+      );
+    }
   };
 
   const handleGridTextSearch = (e) => {
     var text = e.target.value;
-    if (text == "") setIensGridView(...availableProducts);
+    if (text == "") setItensGridView(...availableProducts);
     else {
       var newFilteredList = availableProducts.filter((product) =>
         product.nomeProduto.includes(text)
       );
-      setIensGridView(newFilteredList);
+      setItensGridView(newFilteredList);
     }
   };
 
@@ -91,17 +130,22 @@ function TransactionRegisterModal({
       toast.error("A movimentação precisa de itens para ser enviada.");
     else {
       postSaveFunc({
-        idMovimentacao: 0,
+        idMovimentacao: isEdit ? defaultTransaction.idMovimentacao : 0,
         idEstoque: stockId,
         idUsuario: 0,
-        dataMovimentacao: getValues("dataMovimentacao"),
+        dataMovimentacao: isEdit
+          ? defaultTransaction.dataMovimentacao
+          : getValues("dataMovimentacao"),
         tipoMovimentacao: getValues("tipoMivimentacao"),
         processado: false,
         itens: [...transactionItens],
       });
-      toast.success(
-        "Produto adicionado aos itens da movimentação com sucesso."
-      );
+
+      isEdit
+        ? toast.success("Produto atualizados na movimentação com sucesso.")
+        : toast.success(
+            "Produto adicionado aos itens da movimentação com sucesso."
+          );
       closeFunc(false);
     }
   };
@@ -305,7 +349,7 @@ function TransactionRegisterModal({
         <ProductModal
           title={"Adicionar item na movimentação"}
           product={selectedProduct}
-          isNewProduct={true}
+          isNewProduct={transactionItemEdit == null ? true : false}
           isTransaction={true}
           postSaveFunc={handlePostAddItem}
           postDeleteFunc={null}

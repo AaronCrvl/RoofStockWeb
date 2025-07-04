@@ -18,20 +18,18 @@ function ProductModal({
     formState: { errors },
   } = useForm({
     defaultValues: {
-      idProduto: product == null ? 0 : product.idProduto,
-      nomeProduto: product == null ? "" : product.nomeProduto,
-      idMarca: product == null ? 0 : product.idMarca,
-      valor: product == null ? 0 : product.valor,
-      quantidade: product == null ? 0 : product.quantidade,
+      idProduto: isNewProduct == null ? 0 : product.idProduto,
+      nomeProduto: isNewProduct == null ? "" : product.nomeProduto,
+      idMarca: isNewProduct == null ? 0 : product.idMarca,
+      valor: isNewProduct == null ? 0 : product.valor,
+      quantidade: isNewProduct == null ? 0 : product.quantidade,
       dataValidade:
-        product == null
-          ? formatdateToInput()
-          : product.dataValidade,
-      promocao: product == null ? false : product.promocao,
+        isNewProduct == null ? formatdateToInput() : product.dataValidade,
+      promocao: isNewProduct == null ? false : product.promocao,
       quantidadeMovimentacao:
-        product == null ? 0 : product.quantidadeMovimentacao,
-      quebras: product == null ? 0 : product.quebras,
-      cortesias: product == null ? 0 : product.cortesias,
+        isNewProduct == null ? 0 : product.quantidadeMovimentacao,
+      quebras: isNewProduct == null ? 0 : product.quebras,
+      cortesias: isNewProduct == null ? 0 : product.cortesias,
     },
   });
 
@@ -51,7 +49,7 @@ function ProductModal({
           }, 2000);
         });
 
-        postSaveFunc(data, isNewProduct);
+        postSaveFunc(product.idItemMovimentacao, data, isNewProduct);
       } else {
         new Promise((resolve) => {
           setTimeout(() => {
@@ -65,6 +63,7 @@ function ProductModal({
             );
           }, 2000);
         });
+        postSaveFunc(product.idItemMovimentacao, data, isNewProduct);
       }
     } catch (e) {
       toast.error(

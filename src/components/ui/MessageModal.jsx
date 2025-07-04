@@ -8,8 +8,7 @@ function MessageModal({ message, options }) {
 
   useEffect(() => {
     if (isOptionSelected) {
-        options[selectedIndex].func();
-        options[selectedIndex+1].func(); // TODO: Fix logic
+        options[selectedIndex].func();       
     }
   }, [isOptionSelected, selectedIndex, options]);
 

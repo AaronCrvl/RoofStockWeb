@@ -38,4 +38,10 @@ Seu funcionamento é centralizado em uma interface amigável, onde usuários ace
   - Promoções próximas do fim.
   - Produtos próximos do vencimento.
 
-Made with the help of 🎶 and my 🐶. / Feito com a ajuda de muita 🎶 e meu 🐶.
+Made with the help of 🎶 and my 🐶. 
+Feito com a ajuda de muita 🎶 e meu 🐶.
+
+
+https://github.com/user-attachments/assets/5b7e741e-555f-4ded-84dd-dd215dd89b3e
+
+ 

@@ -11,6 +11,7 @@ function ProductModal({
   postSaveFunc,
   postDeleteFunc,
   isTransaction = false,
+  isClosure = false,
 }) {
   const {
     register,
@@ -158,182 +159,66 @@ function ProductModal({
                       Fechar
                     </button>
                   </div>
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      Edite ou altere as propriedades do produto presente no
-                      estoque.
-                    </p>
+                  {isClosure ? (
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        Edite ou altere as propriedades do produto presente no
+                        fechamento.
+                      </p>
 
-                    <>
-                      <div
-                        className={"mt-10".concat(
-                          isTransaction ? " opacity-50 " : " opacity-10 "
-                        )}
-                      >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Nome Produto
-                        </label>
-                        <input
-                          name="nomeProduto"
-                          type="text"
-                          {...register("nomeProduto", {
-                            required: "O nome do produto é obrigatório.",
-                            minLength: 3,
-                          })}
-                          className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
-                        />
-                        {errors.nomeProduto && (
-                          <p className="text-red-600">
-                            {errors.nomeProduto.message}
-                          </p>
-                        )}
-                      </div>
-                      <div
-                        className={"mt-10".concat(
-                          isTransaction ? " opacity-50 " : " opacity-10 "
-                        )}
-                      >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Marca
-                        </label>
-                        <select
-                          name="idMarca"
-                          readOnly={isTransaction ? true : false}
-                          {...register("idMarca", {
-                            required:
-                              "A seleção da marca do produto é obrigatória.",
-                          })}
-                          className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                      <>
+                        <div
+                          className={"mt-10".concat(
+                            isTransaction ? " opacity-50 " : " opacity-10 "
+                          )}
                         >
-                          <option>1</option>
-                          <option>2</option>
-                          <option>3</option>
-                        </select>
-                        {errors.idMarca && (
-                          <p className="text-red-600">
-                            {errors.idMarca.message}
-                          </p>
-                        )}
-                      </div>
-                      <div
-                        className={"mt-10".concat(
-                          isTransaction ? " opacity-50 " : " opacity-10 "
-                        )}
-                      >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Valor Unitário
-                        </label>
-                        <input
-                          name="valor"
-                          readOnly={isTransaction ? true : false}
-                          type="number"
-                          {...register("valor", {
-                            required: "O valor é obrigatório.",
-                            min: {
-                              value: 1,
-                              message: "O valor deve ser maior que zero.",
-                            },
-                          })}
-                          className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
-                        />
-                        {errors.valor && (
-                          <p className="text-red-600">{errors.valor.message}</p>
-                        )}
-                      </div>
-                      <div
-                        className={"mt-10".concat(
-                          isTransaction ? " opacity-50 " : " opacity-10 "
-                        )}
-                      >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Quantidade Em Estoque
-                        </label>
-                        {isNewProduct ? (
-                          <></>
-                        ) : (
-                          <span className="text-xs font-semibold text-black/50">
-                            (Utilize a tela de movimentações para alterar as
-                            quantidades de produtos existentes)
-                          </span>
-                        )}
-                        {isTransaction ? (
-                          <></>
-                        ) : (
-                          <span className="text-xs font-semibold text-black/50">
-                            Em estoque atualmente : {product.quantidade}
-                          </span>
-                        )}
-                        <input
-                          name="quantidade"
-                          type="number"
-                          readOnly={isNewProduct ? false : true}
-                          {...register("quantidade", {
-                            required: "A quantidade é obrigatória.",
-                            min: {
-                              value: 1,
-                              message: "A quantidade deve ser maior que zero.",
-                            },
-                          })}
-                          className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
-                        />
-                        {errors.quantidade && (
-                          <p className="text-red-600">
-                            {errors.quantidade.message}
-                          </p>
-                        )}
-                      </div>
-                      <div
-                        className={"mt-10".concat(
-                          isTransaction ? " opacity-50 " : " opacity-10 "
-                        )}
-                      >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Data de Validade
-                        </label>
-                        <input
-                          name="dataValidade"
-                          type="date"
-                          readOnly={isTransaction ? true : false}
-                          {...register("dataValidade", {
-                            required: "A data de validade é obrigatória.",
-                            valueAsDate: true,
-                          })}
-                          className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
-                        />
-                        {errors.dataValidade && (
-                          <p className="text-red-600">
-                            {errors.dataValidade.message}
-                          </p>
-                        )}
-                      </div>
-                      <div
-                        className={"mt-6 flex items-center gap-2".concat(
-                          isTransaction ? " opacity-50 " : " opacity-10 "
-                        )}
-                      >
-                        <input
-                          name="promocao"
-                          type="checkbox"
-                          readOnly={isTransaction ? true : false}
-                          {...register("promocao", {
-                            value: false,
-                          })}
-                          className="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500"
-                        />
-                        <label
-                          htmlFor="promocao"
-                          className="text-sm text-gray-700"
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Nome Produto
+                          </label>
+                          <input
+                            name="nomeProduto"
+                            type="text"
+                            {...register("nomeProduto", {
+                              required: "O nome do produto é obrigatório.",
+                              minLength: 3,
+                            })}
+                            className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                          />
+                          {errors.nomeProduto && (
+                            <p className="text-red-600">
+                              {errors.nomeProduto.message}
+                            </p>
+                          )}
+                        </div>
+                        <div
+                          className={"mt-10".concat(
+                            isTransaction ? " opacity-50 " : " opacity-10 "
+                          )}
                         >
-                          Promoção
-                        </label>
-                        {errors.promocao && (
-                          <p className="text-red-600">
-                            {errors.promocao.message}
-                          </p>
-                        )}
-                      </div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Quantidade Em Estoque
+                          </label>
+                          <input
+                            name="quantidade"
+                            type="number"
+                            readOnly={isNewProduct ? false : true}
+                            {...register("quantidade", {
+                              required: "A quantidade é obrigatória.",
+                              min: {
+                                value: 1,
+                                message:
+                                  "A quantidade deve ser maior que zero.",
+                              },
+                            })}
+                            className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                          />
+                          {errors.quantidade && (
+                            <p className="text-red-600">
+                              {errors.quantidade.message}
+                            </p>
+                          )}
+                        </div>
 
-                      {isTransaction && (
                         <>
                           <div className="mt-10">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -409,9 +294,267 @@ function ProductModal({
                             )}
                           </div>
                         </>
-                      )}
-                    </>
-                  </div>
+                      </>
+                    </div>
+                  ) : (
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        Edite ou altere as propriedades do produto presente no
+                        estoque.
+                      </p>
+
+                      <>
+                        <div
+                          className={"mt-10".concat(
+                            isTransaction ? " opacity-50 " : " opacity-10 "
+                          )}
+                        >
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Nome Produto
+                          </label>
+                          <input
+                            name="nomeProduto"
+                            type="text"
+                            {...register("nomeProduto", {
+                              required: "O nome do produto é obrigatório.",
+                              minLength: 3,
+                            })}
+                            className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                          />
+                          {errors.nomeProduto && (
+                            <p className="text-red-600">
+                              {errors.nomeProduto.message}
+                            </p>
+                          )}
+                        </div>
+                        <div
+                          className={"mt-10".concat(
+                            isTransaction ? " opacity-50 " : " opacity-10 "
+                          )}
+                        >
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Marca
+                          </label>
+                          <select
+                            name="idMarca"
+                            readOnly={isTransaction ? true : false}
+                            {...register("idMarca", {
+                              required:
+                                "A seleção da marca do produto é obrigatória.",
+                            })}
+                            className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                          >
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                          </select>
+                          {errors.idMarca && (
+                            <p className="text-red-600">
+                              {errors.idMarca.message}
+                            </p>
+                          )}
+                        </div>
+                        <div
+                          className={"mt-10".concat(
+                            isTransaction ? " opacity-50 " : " opacity-10 "
+                          )}
+                        >
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Valor Unitário
+                          </label>
+                          <input
+                            name="valor"
+                            readOnly={isTransaction ? true : false}
+                            type="number"
+                            {...register("valor", {
+                              required: "O valor é obrigatório.",
+                              min: {
+                                value: 1,
+                                message: "O valor deve ser maior que zero.",
+                              },
+                            })}
+                            className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                          />
+                          {errors.valor && (
+                            <p className="text-red-600">
+                              {errors.valor.message}
+                            </p>
+                          )}
+                        </div>
+                        <div
+                          className={"mt-10".concat(
+                            isTransaction ? " opacity-50 " : " opacity-10 "
+                          )}
+                        >
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Quantidade Em Estoque
+                          </label>
+                          {isNewProduct ? (
+                            <></>
+                          ) : (
+                            <span className="text-xs font-semibold text-black/50">
+                              (Utilize a tela de movimentações para alterar as
+                              quantidades de produtos existentes)
+                            </span>
+                          )}
+                          {isTransaction ? (
+                            <></>
+                          ) : (
+                            <span className="text-xs font-semibold text-black/50">
+                              Em estoque atualmente : {product.quantidade}
+                            </span>
+                          )}
+                          <input
+                            name="quantidade"
+                            type="number"
+                            readOnly={isNewProduct ? false : true}
+                            {...register("quantidade", {
+                              required: "A quantidade é obrigatória.",
+                              min: {
+                                value: 1,
+                                message:
+                                  "A quantidade deve ser maior que zero.",
+                              },
+                            })}
+                            className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                          />
+                          {errors.quantidade && (
+                            <p className="text-red-600">
+                              {errors.quantidade.message}
+                            </p>
+                          )}
+                        </div>
+                        <div
+                          className={"mt-10".concat(
+                            isTransaction ? " opacity-50 " : " opacity-10 "
+                          )}
+                        >
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Data de Validade
+                          </label>
+                          <input
+                            name="dataValidade"
+                            type="date"
+                            readOnly={isTransaction ? true : false}
+                            {...register("dataValidade", {
+                              required: "A data de validade é obrigatória.",
+                              valueAsDate: true,
+                            })}
+                            className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                          />
+                          {errors.dataValidade && (
+                            <p className="text-red-600">
+                              {errors.dataValidade.message}
+                            </p>
+                          )}
+                        </div>
+                        <div
+                          className={"mt-6 flex items-center gap-2".concat(
+                            isTransaction ? " opacity-50 " : " opacity-10 "
+                          )}
+                        >
+                          <input
+                            name="promocao"
+                            type="checkbox"
+                            readOnly={isTransaction ? true : false}
+                            {...register("promocao", {
+                              value: false,
+                            })}
+                            className="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500"
+                          />
+                          <label
+                            htmlFor="promocao"
+                            className="text-sm text-gray-700"
+                          >
+                            Promoção
+                          </label>
+                          {errors.promocao && (
+                            <p className="text-red-600">
+                              {errors.promocao.message}
+                            </p>
+                          )}
+                        </div>
+
+                        {isTransaction && (
+                          <>
+                            <div className="mt-10">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Quantidade Movimentação
+                              </label>
+                              <input
+                                name="quantidadeMovimentacao"
+                                type="number"
+                                {...register("quantidadeMovimentacao", {
+                                  required:
+                                    "A quantidade de movimentação é obrigatória.",
+                                  min: {
+                                    value: 1,
+                                    message:
+                                      "A quantidade de movimentação não pode ser menor ou igual a zero.",
+                                  },
+                                })}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                              />
+                              {errors.quantidadeMovimentacao && (
+                                <p className="text-red-600">
+                                  {errors.quantidadeMovimentacao.message}
+                                </p>
+                              )}
+                            </div>
+                            <div className="mt-10">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Quebras
+                              </label>
+                              <input
+                                name="quebras"
+                                type="number"
+                                {...register("quebras", {
+                                  required:
+                                    "A quantidade de quebras é obrigatória.",
+                                  min: {
+                                    value: 0,
+                                    message:
+                                      "A quantidade de quebras não pode ser negativa.",
+                                  },
+                                })}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                              />
+                              {errors.quebras && (
+                                <p className="text-red-600">
+                                  {errors.quebras.message}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="mt-10">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Cortesias
+                              </label>
+                              <input
+                                name="cortesias"
+                                type="number"
+                                {...register("cortesias", {
+                                  required:
+                                    "A quantidade de cortesias é obrigatória.",
+                                  min: {
+                                    value: 0,
+                                    message:
+                                      "A quantidade de cortesias não pode ser negativa.",
+                                  },
+                                })}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                              />
+                              {errors.cortesias && (
+                                <p className="text-red-600">
+                                  {errors.cortesias.message}
+                                </p>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

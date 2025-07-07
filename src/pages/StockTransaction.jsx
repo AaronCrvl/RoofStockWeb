@@ -13,6 +13,10 @@ import { useForm } from "react-hook-form";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 import MessageModal from "../components/ui/MessageModal";
 import { formatdateToInput } from "../utils/dateFunctions.util";
+import {
+  // exportTransactionToPdf,
+  exportAllTransactionsToPdf,
+} from "../utils/PDF/pdfGenerator.utils";
 
 const STOCK_TRANSACTION = [
   {
@@ -377,9 +381,10 @@ function StockTransaction() {
   };
 
   const handleAddNewTransaction = (newTransaction) => {
-    if(isEditItem) {
+    if (isEditItem) {
       var updatedTransactions = stockTransaction.map((tran) => {
-        return selectedTransaction.idMovimentacao == newTransaction.idMovimentacao
+        return selectedTransaction.idMovimentacao ==
+          newTransaction.idMovimentacao
           ? {
               ...tran,
               idMovimentacao: tran.idMovimentacao,
@@ -391,12 +396,11 @@ function StockTransaction() {
               itens: newTransaction.itens,
             }
           : tran;
-      })
+      });
 
       setStockTransaction(updatedTransactions);
       setGridView(updatedTransactions);
-    }
-    else {
+    } else {
       var newStockTransactions = [...stockTransaction, newTransaction];
       setStockTransaction(newStockTransactions);
       toast.success("Movimentação criada com sucesso");
@@ -457,9 +461,9 @@ function StockTransaction() {
       };
     });
 
-    setStockTransaction(newStockTran);       
-    setGridView(newStockTran);        
-    setShowMessageModal(false);    
+    setStockTransaction(newStockTran);
+    setGridView(newStockTran);
+    setShowMessageModal(false);
   };
 
   const onCancelModalOperation = () => {
@@ -642,6 +646,36 @@ function StockTransaction() {
                 </details>
               ))}
           </div>
+          <div className="flex justify-end col-span-5 mb-4">
+            <button
+              onClick={() =>
+                exportAllTransactionsToPdf(
+                  gridView.sort(
+                    (a, b) =>
+                      new Date(b.dataMovimentacao) -
+                      new Date(a.dataMovimentacao)
+                  )
+                )
+              }
+              className="text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 flex items-center space-x-2 px-3 py-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4v16m0 0l-4-4m4 4l4-4m-8-6h8a2 2 0 012 2v6a2 2 0 01-2 2h-8a2 2 0 01-2-2v-6a2 2 0 012-2z"
+                />
+              </svg>
+              <span>Export All to PDF</span>
+            </button>
+          </div>          
           <>
             {showRegisterModal && (
               <TransactionRegisterModal

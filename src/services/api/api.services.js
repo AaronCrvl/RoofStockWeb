@@ -1,8 +1,8 @@
-import axios from 'axios';
-import { getBaseUrl } from '../../Utils/integration.utils';
+import axios from "axios";
+import { getBaseUrl } from "../../Utils/integration.utils";
 
-const onRequest = async (config) => {  
-  if (localStorage.getItem("token").length > 0) {    
+const onRequest = async (config) => {
+  if (localStorage.getItem("token").length > 0) {
     config.headers["Authorization"] = `Bearer ${localStorage.getItem("token")}`;
   }
   return config;
@@ -14,10 +14,10 @@ const setupInterceptorsTo = (axiosInstance) => {
 };
 
 const api = axios.create({
-  baseURL: getBaseUrl(),
+  baseURL: getBaseUrl("dev"),
   headers: {
     Accept: "application/json",
-    'Content-Tye': 'application/json',    
+    "Content-Tye": "application/json",
   },
 });
 

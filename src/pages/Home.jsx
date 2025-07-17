@@ -50,7 +50,7 @@ function Home() {
             Login In
           </button>
           <button onClick={() => handleRedirect("createAccount")}>
-            Sign Up
+            Criar Conta
           </button>
         </div>
       </div>

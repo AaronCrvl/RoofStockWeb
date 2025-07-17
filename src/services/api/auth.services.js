@@ -3,19 +3,19 @@ import { toast } from "react-toastify";
 
 export const Authenticate = async (data) => {
   try {
-    const response = await api.post("/Autenticacao/Autenticar", {
-      login: data.login,
+    const response = await api.post("/Auth/Authenticate", {
+      cnpj: data.cnpj,
+      login: data.username,
       senha: data.senha,
     });
 
-    if (response.ok) {
-      var token = await response.json();
+    if (response.status == 200) {
+      var token = response.data.token;
       localStorage.setItem("token", token);
     } else {
-      toast.error(`Erro: ${await response.text()}`);
+      toast.error(`Erro ao autenticar: ${await response.text()}`);
     }
   } catch (err) {
-    console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
+    toast.error("Error ao tentar realizar o login: ", err);
   }
 };

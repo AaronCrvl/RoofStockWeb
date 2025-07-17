@@ -1,78 +1,27 @@
-import api from './api.services';
-import { getBaseUrl } from '../../Utils/integration.utils';
+import api from "./api.services";
+import { toast } from "react-toastify";
 
-// GET - Get user by ID
-export const getUserById = async (id) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      console.log(`GET ${getBaseUrl()}/Usuario/ObterUsuario/${id}`);
-      const response = await api.get(`/Usuario/ObterUsuario/${id}`);
+export const Create = async (data) => {
+  try {
+    const response = await api.post("/User/Create", {
+      cnpjEmpresa: data.cnpj.toString(),
+      cpf: data.cpf.toString(),
+      email: data.email,
+      nomePessoa: data.nome,
+      cargo: data.cargo.toString(),
+      login: data.username,
+      senha: data.senha,
+      telefone: data.telefone.toString(),
+    });
 
-      if (response.ok) {
-        resolve(await response.json());
-      } else {
-        reject(`Error: ${await response.text()}`);
-      }
-    } catch (err) {
-      console.error('Error getting user by ID:', err);
-      reject(err);
+    if (response.status == 200) {
+      toast.success(
+        "Conta criada com sucesso. Acesse a página de login para acesar o sistema."
+      );
+    } else {
+      toast.error(`Erro ao criar conta: ${await response.text()}`);
     }
-  });
-};
-
-// GET - Get user by username
-export const getUserByUsername = async (username) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      console.log(`GET ${getBaseUrl()}/Usuario/ObterUsuario/${username}`);
-      const response = await api.get(`/Usuario/ObterUsuario/${username}`);
-
-      if (response.ok) {
-        resolve(await response.json());
-      } else {
-        reject(`Error: ${await response.text()}`);
-      }
-    } catch (err) {
-      console.error('Error getting user by username:', err);
-      reject(err);
-    }
-  });
-};
-
-// POST - Create new user
-export const createUser = async (user) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      console.log(`POST ${getBaseUrl()}/Usuario/CriarUsuario`);
-      const response = await api.post(`/Usuario/CriarUsuario`, user);
-
-      if (response.ok) {
-        resolve(await response.json());
-      } else {
-        reject(`Error: ${await response.text()}`);
-      }
-    } catch (err) {
-      console.error('Error creating user:', err);
-      reject(err);
-    }
-  });
-};
-
-// POST - Edit user
-export const editUser = async (id, user) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      console.log(`POST ${getBaseUrl()}/Usuario/EditarUsuario/${id}`);
-      const response = await api.post(`/Usuario/EditarUsuario/${id}`, user);
-
-      if (response.ok) {
-        resolve(await response.json());
-      } else {
-        reject(`Error: ${await response.text()}`);
-      }
-    } catch (err) {
-      console.error('Error editing user:', err);
-      reject(err);
-    }
-  });
+  } catch (err) {
+    toast.error("Error ao tentar criar uma conta: ", err);
+  }
 };

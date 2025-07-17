@@ -9,6 +9,7 @@ import AdminRoute from "./AdminRoute";
 import StockTransaction from "../pages/StockTransaction";
 import StockClosure from "../pages/StockClosure";
 import Settings from "../pages/Settings";
+import CreateAccount from "../pages/Login/CreateAccount";
 
 export default function AppRoutes() {
   return (
@@ -16,6 +17,7 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/createAccount" element={<CreateAccount />} />
 
         {/* Routes for authenticated users */}
         <Route element={<PrivateRoute />}>

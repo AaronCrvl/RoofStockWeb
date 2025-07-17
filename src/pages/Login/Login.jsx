@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useUser } from "../../contexts/UserContext";
 import { useForm } from "react-hook-form";
+import { Authenticate } from "../../services/api/auth.services";
 
 const Login = () => {
   const { setLogged, setAdmin, admin } = useUser();
@@ -13,20 +14,17 @@ const Login = () => {
   } = useForm();
   const navigate = useNavigate();
 
-  const onSubmitLogin = (data) => {
-   
-    console.log(data);
-    setLogged(true);
-    setAdmin(false);
-    toast.success("Login realizado com sucesso.");
-    admin ? navigate("/adminDashboard") : navigate("/dashboard");
-
-    // Example for API call:
-    // Authenticate({ login, senha }).then(response => {
-    //   if (response.status === 200) {
-    //     ...
-    //   }
-    // });
+  const onSubmitLogin = (data) => {        
+    Authenticate(data).then((response) => {
+      if (localStorage.getItem("token") != null) {
+        setLogged(true);
+        setAdmin(response.admin);        
+        admin ? navigate("/adminDashboard") : navigate("/dashboard");
+        toast.success("Login realizado com sucesso.");
+      }
+      else 
+        toast.error("Falha ao realizar login.");
+    });
   };
 
   return (
@@ -90,7 +88,7 @@ const Login = () => {
                 </button>
                 <button
                   className="w-full bg-gray-600 text-white font-semibold py-3 rounded-md transition-colors hover:bg-gray-700"
-                  onClick={() => navigate("createAccount")}
+                  onClick={() => navigate("/createAccount")}
                 >
                   Cadastrar
                 </button>

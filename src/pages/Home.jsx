@@ -37,10 +37,12 @@ function Home() {
               name: "Preços",
               link: "/",
             },
-          ].map((item) => {
+          ].map((item, index) => {
             return (
-              <div className="text-xl">
-                <span className="font-bold" onClick={handleRedirect(item.link)}>{item.name}</span>
+              <div className="text-xl" id={index}>
+                <span className="font-bold" onClick={handleRedirect(item.link)}>
+                  {item.name}
+                </span>
               </div>
             );
           })}

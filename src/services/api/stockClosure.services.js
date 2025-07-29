@@ -16,7 +16,7 @@ export const createStockClosure = async (newStockClosure) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
@@ -32,7 +32,7 @@ export const getStockClosureById = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
@@ -50,7 +50,7 @@ export const getStockClosuresByStock = async (stockId) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
@@ -69,7 +69,7 @@ export const updateStockClosure = async (updatedStockClosure) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
@@ -85,7 +85,7 @@ export const deleteStockClosure = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
@@ -101,6 +101,6 @@ export const deactivateStockClosure = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
+    toast.error(err)
   }
 };

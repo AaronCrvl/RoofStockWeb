@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
 
-function StockControl({ parentStocks, stockSelectionFunc }) {
-  const [stocks, setStocks] = useState(parentStocks);  
+import { SetSessionStock } from "../services/api/stock.service";
 
-  const handleStockSelection = (e) => {    
-    stockSelectionFunc(e.target.value);
+function StockControl({ parentStocks, stockSelectionFunc }) {
+  const [selectedStock, setSelectedStock] = useState(-1);
+  const [stocks, setStocks] = useState([]);
+
+  const handleStockSelection = (e) => {
+    var stockId = stockSelectionFunc(e.target.value);
+    SetSessionStock(stockId).then(() => setSelectedStock(stockId));
   };
 
   useEffect(() => {
-    if (stocks == null && parentStocks != null) setStocks(parentStocks);  
+    if (stocks == null && parentStocks != null) setStocks(parentStocks);
   }, [stocks, parentStocks]);
   return (
     <div className="mb-8">
@@ -16,11 +20,16 @@ function StockControl({ parentStocks, stockSelectionFunc }) {
         Selecionar Estoque:
       </label>
       <select
+        defaultValue={
+          selectedStock == -1
+            ? stocks[0]
+            : stocks.find((stock) => stock.idEstoque == selectedStock)
+        }
         onChange={handleStockSelection}
         className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900"
       >
-        {stocks.map((item) => (
-          <option key={item.idEstoque} value={item.idEstoque}>
+        {stocks.map((item, index) => (
+          <option key={item.idEstoque} value={item.idEstoque} id={index}>
             {item.nomeEstoque}
           </option>
         ))}

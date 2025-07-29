@@ -19,12 +19,11 @@ export const getStockById = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock by ID:", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
-// GET - Get stocks that user have access
-export const getStockByUser = async (idUser) => {
+export const GetStockByUser = async (idUser) => {
   try {
     const response = await api.get(`${route}/GetByUser`, {
       params: { idUser: idUser },
@@ -38,7 +37,25 @@ export const getStockByUser = async (idUser) => {
     }
   } catch (err) {
     console.error("Error getting stock by user ID:", err);
-    toast(err);
+    toast.error(err)
+  }
+};
+
+export const SetSessionStock = async (idEstoque) => {
+  try {
+    const response = await api.patch(`${route}/SetSessionStock`, {
+      params: { idEstoque: idEstoque },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      toast.error(`Erro: ${await response.text()}`);
+    }
+  } catch (err) {
+    console.error("Error setting selected stock in session:", err);
+    toast.error(err);
   }
 };
 
@@ -54,7 +71,7 @@ export const createStock = async (newStock) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
@@ -74,7 +91,7 @@ export const updateStock = async (id, updatedStock) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
@@ -94,7 +111,7 @@ export const deleteStock = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
@@ -114,7 +131,7 @@ export const deactivateStock = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
@@ -134,6 +151,6 @@ export const activateStock = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
+    toast.error(err)
   }
 };

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { PageContainer } from "../components/PageContainer/index";
-import { getStockTransactionsByStock } from "../services/api/stockTransaction.services";
+import { GetStockTransactionByStock } from "../services/api/stockTransaction.services";
 import StockControl from "../components/StockControl";
 import { useUser } from "../contexts/UserContext";
 import { useCompany } from "../contexts/CompanyContext";
-import { getStockByUser } from "../services/api/stock.service";
+import { GetStockByUser } from "../services/api/stock.service";
 import Layout from "../layout/Layout";
 import TransactionRegisterModal from "../components/StockTransaction/TransactionRegisterModal";
 import { toast } from "react-toastify";
-import { getStockProducts } from "../services/api/stockProduct.services";
+import { GetStockProducts } from "../services/api/stockProduct.services";
 import { useForm } from "react-hook-form";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 import MessageModal from "../components/ui/MessageModal";
@@ -17,6 +17,13 @@ import {
   // exportTransactionToPdf,
   exportAllTransactionsToPdf,
 } from "../utils/PDF/pdfGenerator.utils";
+
+import {
+  CreateStockTransaction,
+  UpdateStockTransaction,
+  DeleteStockTransaction,
+} from "../services/api/stockTransaction.services";
+import { DeleteStockTransactionItem } from "../services/api/stockTransaction.services";
 
 const STOCK_TRANSACTION = [
   {
@@ -285,6 +292,7 @@ const PRODUCT_LIST = [
 
 function StockTransaction() {
   const { userId } = useUser();
+
   const { companyId } = useCompany();
 
   const [stocks, setStocks] = useState(STOCKS_LIST);
@@ -317,38 +325,26 @@ function StockTransaction() {
 
   useEffect(() => {
     if (products == null && stocks != null)
-      setProducts(getStockProducts(stocks[0].idEstoque));
+      setProducts(GetStockProducts(stocks[0].idEstoque));
   }, [products, stocks]);
 
   useEffect(() => {
-    if (stocks == null && userId) setStocks(getStockByUser(userId));
+    if (stocks == null && userId) setStocks(GetStockByUser(userId));
   }, [stocks, companyId, userId]);
 
   useEffect(() => {
     if (stockTransaction == null)
-      setStockTransaction(getStockTransactionsByStock(stocks[0].idEstoque));
+      setStockTransaction(GetStockTransactionByStock(stocks[0].idEstoque));
   }, [stocks, stockTransaction]);
 
   const handleStockSelection = (childStockSelect) => {
-    console.log("Selected Stock: ".concat(childStockSelect));
-    new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(
-          new Response(
-            JSON.stringify("Movimentação de estoque carregada com sucesso."),
-            {
-              status: 200, // Ok
-              headers: {
-                "Content-Type": "application/json; utf-8",
-              },
-            }
-          )
-        );
-      }, 2000);
-    });
-
-    // TODO: Backend integration
-    // setStockTransaction(getStockTransactionsByStock(childStockSelect);
+    try {
+      setStockTransaction(GetStockTransactionByStock(childStockSelect));
+      return childStockSelect;
+    } catch (e) {
+      console.log("Erro na seleção de estoque: ".concat(e));
+      toast.error("Erro na seleção de estoque: ".concat(e));
+    }
   };
 
   const handleGridSearch = () => {
@@ -399,12 +395,29 @@ function StockTransaction() {
           : tran;
       });
 
-      setStockTransaction(updatedTransactions);
-      setGridView(updatedTransactions);
+      UpdateStockTransaction(newTransaction)
+        .then(() => {
+          setStockTransaction(updatedTransactions);
+          setGridView(updatedTransactions);
+          toast.success("Movimentação atualizada com sucesso.");
+        })
+        .catch(() => {
+          toast.error(
+            "Ocorreu um erro ao atualizar a movimentação de estoque selecionada."
+          );
+        });
     } else {
-      var newStockTransactions = [...stockTransaction, newTransaction];
-      setStockTransaction(newStockTransactions);
-      toast.success("Movimentação criada com sucesso");
+      CreateStockTransaction(newTransaction)
+        .then(() => {
+          var newStockTransactions = [...stockTransaction, newTransaction];
+          setStockTransaction(newStockTransactions);
+          toast.success("Movimentação criada com sucesso.");
+        })
+        .catch(() => {
+          toast.error(
+            "Ocorreu um erro ao adicionar uma nova movimentação de estoque."
+          );
+        });
     }
   };
 
@@ -446,25 +459,35 @@ function StockTransaction() {
   };
 
   const onItemExclusion = (idMov, idItem) => {
-    const newStockTran = stockTransaction.map((stock) => {
-      return {
-        ...stock,
-        idMovimentacao: stock.idMovimentacao,
-        idEstoque: stock.idEstoque,
-        idUsuario: stock.idUsuario,
-        dataMovimentacao: stock.dataMovimentacao,
-        tipoMovimentacao: stock.idMovimentacao,
-        processado: stock.processado,
-        itens:
-          stock.idMovimentacao == idMov
-            ? stock.itens.filter((item) => item.idItemMovimentacao != idItem)
-            : stock.itens,
-      };
-    });
+    DeleteStockTransactionItem(idMov, idItem)
+      .then(() => {
+        const newStockTran = stockTransaction.map((stock) => {
+          return {
+            ...stock,
+            idMovimentacao: stock.idMovimentacao,
+            idEstoque: stock.idEstoque,
+            idUsuario: stock.idUsuario,
+            dataMovimentacao: stock.dataMovimentacao,
+            tipoMovimentacao: stock.idMovimentacao,
+            processado: stock.processado,
+            itens:
+              stock.idMovimentacao == idMov
+                ? stock.itens.filter(
+                    (item) => item.idItemMovimentacao != idItem
+                  )
+                : stock.itens,
+          };
+        });
 
-    setStockTransaction(newStockTran);
-    setGridView(newStockTran);
-    setShowMessageModal(false);
+        setStockTransaction(newStockTran);
+        setGridView(newStockTran);
+        setShowMessageModal(false);
+      })
+      .catch(() => {
+        toast.error(
+          "Ocorreu um erro ao excluir um item da movimentação de estoque."
+        );
+      });
   };
 
   const onCancelModalOperation = () => {

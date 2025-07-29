@@ -3,7 +3,7 @@ import { PageContainer } from "../components/PageContainer/index";
 import { getStockClosuresByStock } from "../services/api/stockClosure.services";
 import StockControl from "../components/StockControl";
 import { useUser } from "../contexts/UserContext";
-import { getStockByUser } from "../services/api/stock.service";
+import { GetStockByUser } from "../services/api/stock.service";
 import Layout from "../layout/Layout";
 import { useForm } from "react-hook-form";
 import { formatdateToInput } from "../utils/dateFunctions.util";
@@ -97,7 +97,7 @@ function StockClosure() {
 
   useEffect(() => {
     if (!stocks.length && userId) {
-      setStocks(getStockByUser(userId));
+      setStocks(GetStockByUser(userId));
     }
   }, [stocks, userId]);
 

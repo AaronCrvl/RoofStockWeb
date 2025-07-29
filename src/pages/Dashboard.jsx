@@ -219,7 +219,10 @@ const Dashboard = () => {
           : prod
       );
 
-      UpdateStockProduct(product.idProduto, updatedProductList)
+      const updatedProduct = updatedProductList.find(
+        (prod) => prod.idProduto === product.idProduto
+      );
+      UpdateStockProduct(product.idProduto, updatedProduct)
         .then(() => {
           setProducts(updatedProductList);
           setProductsGridView(updatedProductList);

@@ -1,13 +1,14 @@
+// ================== Imports ==================
 import api from "./api.services";
 import { toast } from "react-toastify";
 
-// POST - Create a new stock closure
-export const createStockClosure = async (newStockClosure) => {
+// ================== Constants ==================
+const route = "/StockClosure";
+
+// ================== Endpoints ==================
+export const CreateStockClosure = async (newStockClosure) => {
   try {
-    const response = await api.post(
-      "/FechamentoEstoque/Criar",
-      newStockClosure
-    );
+    const response = await api.post(route.concat("/Create"), newStockClosure);
 
     if (response.ok) {
       return await response.json();
@@ -15,50 +16,15 @@ export const createStockClosure = async (newStockClosure) => {
       toast.error(`Erro: ${await response.text()}`);
     }
   } catch (err) {
-    console.error("Error getting stock by supervisor ID:", err);
-    toast.error(err)
+    console.error("Error creting stock closure: ", err);
+    toast.error(err);
   }
 };
 
-// GET - Get stock closure by ID
-export const getStockClosureById = async (id) => {
+export const UpdateStockClosure = async (updatedStockClosure) => {
   try {
-    const response = await api.get(`/FechamentoEstoque/Obter/${id}`);
-
-    if (response.ok) {
-      return await response.json();
-    } else {
-      toast.error(`Erro: ${await response.text()}`);
-    }
-  } catch (err) {
-    console.error("Error getting stock by supervisor ID:", err);
-    toast.error(err)
-  }
-};
-
-// GET - Get stock closure by stock ID
-export const getStockClosuresByStock = async (stockId) => {
-  try {
-    const response = await api.get(
-      `/FechamentoEstoque/ObterPorEstoque/${stockId}`
-    );
-
-    if (response.ok) {
-      return await response.json();
-    } else {
-      toast.error(`Erro: ${await response.text()}`);
-    }
-  } catch (err) {
-    console.error("Error getting stock by supervisor ID:", err);
-    toast.error(err)
-  }
-};
-
-// PUT - Update stock closure
-export const updateStockClosure = async (updatedStockClosure) => {
-  try {
-    const response = await api.put(
-      "/FechamentoEstoque/Alterar",
+    const response = await api.patch(
+      route.concat("/Alter"),
       updatedStockClosure
     );
 
@@ -68,8 +34,42 @@ export const updateStockClosure = async (updatedStockClosure) => {
       toast.error(`Erro: ${await response.text()}`);
     }
   } catch (err) {
-    console.error("Error getting stock by supervisor ID:", err);
-    toast.error(err)
+    console.error("Error updating stock closure: ", err);
+    toast.error(err);
+  }
+};
+
+export const GenerateStockClosure = async (newStockClosure) => {
+  try {
+    const response = await api.post(route.concat("/Generate"), newStockClosure);
+
+    if (response.ok) {
+      return await response.json();
+    } else {
+      toast.error(`Erro: ${await response.text()}`);
+    }
+  } catch (err) {
+    console.error("Error generating stock closure: ", err);
+    toast.error(err);
+  }
+};
+
+export const GetStockClosureByStock = async (id) => {
+  try {
+    const response = await api.get(route.concat("/GetByStock"), {
+      params: {
+        idEstoque: id,
+      },
+    });
+
+    if (response.ok) {
+      return await response.json();
+    } else {
+      toast.error(`Erro: ${await response.text()}`);
+    }
+  } catch (err) {
+    console.error("Error getting closure by stock: ", err);
+    toast.error(err);
   }
 };
 
@@ -85,22 +85,6 @@ export const deleteStockClosure = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast.error(err)
-  }
-};
-
-// PUT - Deactivate stock closure
-export const deactivateStockClosure = async (id) => {
-  try {
-    const response = await api.put(`/FechamentoEstoque/Desativar/${id}`);
-
-    if (response.ok) {
-      return await response.json();
-    } else {
-      toast.error(`Erro: ${await response.text()}`);
-    }
-  } catch (err) {
-    console.error("Error getting stock by supervisor ID:", err);
-    toast.error(err)
+    toast.error(err);
   }
 };

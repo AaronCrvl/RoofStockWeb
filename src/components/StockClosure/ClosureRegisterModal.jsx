@@ -1,24 +1,26 @@
-import React, { useState, useEffect } from "react";
+// ================== Imports ==================
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import ProductModal from "../Product/ProductModal";
 import { toast } from "react-toastify";
 import { formatdateToInput } from "../../utils/dateFunctions.util";
+import {
+  CreateStockClosure,
+  UpdateStockClosure,
+  GenerateStockClosure,
+} from "../../services/api/stockClosure.services";
 
-function ClosureRegisterModal({
-  stockId,
+// ================== Component ==================
+function ClosureRegisterModal({  
   defaultClosure,
-  closureItemEdit,
   isEdit,
   pClosureItens,
-  availableItensList,
   closeFunc,
   postSaveFunc,
 }) {
-  const [availableProducts] = useState(availableItensList || []);
+  // ====== State ======
+  const [availableProducts] = useState([]);
   const [itensGridView, setItensGridView] = useState(availableProducts);
-  const [openItemModal, setOpenItemModal] = useState(false);
   const [closureItens, setClosureItens] = useState(pClosureItens || []);
-  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const {
     register,
@@ -40,47 +42,7 @@ function ClosureRegisterModal({
     },
   });
 
-  useEffect(() => {
-    if (isEdit && closureItemEdit) {
-      setSelectedProduct(closureItemEdit);
-      setOpenItemModal(true);
-    }
-  }, [isEdit, closureItemEdit]);
-
-  const handleItemModalVisibility = (open) => {
-    setOpenItemModal(open);
-    if (!open) setSelectedProduct(null);
-  };
-
-  const handleItemAdd = (id) => {
-    const item = availableProducts.find((prod) => prod.idProduto === id);
-    if (item) {
-      setSelectedProduct(item);
-      setOpenItemModal(true);
-    }
-  };
-
-  const handlePostAddItem = (product) => {
-    try {
-      // Check if product already exists, update or add new
-      const existsIndex = closureItens.findIndex(
-        (item) => item.idProduto === product.idProduto
-      );
-      let newItems;
-      if (existsIndex !== -1) {
-        newItems = [...closureItens];
-        newItems[existsIndex] = product;
-      } else {
-        newItems = [...closureItens, product];
-      }
-      setClosureItens(newItems);
-      handleItemModalVisibility(false);
-    } catch (error) {
-      toast.error("Erro ao salvar item do fechamento.");
-      console.error("Error saving closure item:", error);
-    }
-  };
-
+  // ====== Event Handlers ======
   const handleGridTextSearch = (e) => {
     const text = e.target.value.toLowerCase();
     if (!text) {
@@ -93,15 +55,9 @@ function ClosureRegisterModal({
     }
   };
 
-  const onSubmit = () => {
-    if (closureItens.length === 0) {
-      toast.error("O fechamento precisa de itens.");
-      return;
-    }
-
+  const handleClosureCreationSubmit = () => {
     const data = {
-      idFechamento: isEdit && defaultClosure ? defaultClosure.idFechamento : 0,
-      idEstoque: stockId,
+      idFechamento: isEdit && defaultClosure ? defaultClosure.idFechamento : 0,    
       dataFechamento: getValues("dataFechamento"),
       dataIncialFechamento: getValues("dataIncialFechamento"),
       dataFinalFechamento: getValues("dataFinalFechamento"),
@@ -109,11 +65,41 @@ function ClosureRegisterModal({
       itens: closureItens,
     };
 
-    postSaveFunc(data);
-    toast.success("Fechamento salvo com sucesso!");
-    closeFunc(false);
+    if (defaultClosure.idFechamento > 0) {
+      CreateStockClosure(data).then((reponse) => {
+        data.idFechamento = reponse.idFechamento;
+        postSaveFunc(defaultClosure.idFechamento > 0 ? false : true, data);
+        toast.success("Fechamento salvo com sucesso!");
+        closeFunc(false);
+      });
+    } else {
+      UpdateStockClosure(data).then((reponse) => {
+        data.idFechamento = reponse.idFechamento;
+        postSaveFunc(defaultClosure.idFechamento > 0 ? false : true, data);
+        toast.success("Fechamento atualizado com sucesso!");
+        closeFunc(false);
+      });
+    }
   };
 
+  const handleStockClosureItensAudit = () => {
+    if (defaultClosure.idFechamento > 0) {
+      const data = {
+        idFechamento:
+          isEdit && defaultClosure ? defaultClosure.idFechamento : 0,        
+        dataFechamento: getValues("dataFechamento"),
+        dataIncialFechamento: getValues("dataIncialFechamento"),
+        dataFinalFechamento: getValues("dataFinalFechamento"),
+      };
+
+      GenerateStockClosure(data).then((reponse) => {
+        setClosureItens(reponse.itens);
+        setItensGridView(reponse.itens);
+      });
+    } else toast.error("Salve o fechamento antes de auditar os itens.");
+  };
+
+  // ====== Render ======
   return (
     <div
       className="relative z-10"
@@ -128,7 +114,7 @@ function ClosureRegisterModal({
       ></div>
 
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        handleClosureCreationSubmit={handleSubmit(handleClosureCreationSubmit)}
         className="fixed inset-0 z-20 flex items-center justify-center p-4 overflow-y-auto"
       >
         <div className="relative w-full max-w-3xl overflow-hidden rounded-lg bg-white shadow-xl">
@@ -247,25 +233,21 @@ function ClosureRegisterModal({
               />
             </div>
 
-            {/* Product list */}
+            
             <div className="max-h-40 overflow-y-auto rounded-md border border-gray-300 bg-gray-50">
               {itensGridView && itensGridView.length > 0 ? (
                 itensGridView.map((item) => (
                   <div
                     key={item.idProduto}
-                    className="flex cursor-pointer items-center justify-between border-b border-gray-200 px-4 py-2 hover:bg-red-100"
-                    onClick={() => handleItemAdd(item.idProduto)}
+                    className="flex cursor-pointer items-center justify-between border-b border-gray-200 px-4 py-2 hover:bg-red-100"                    
                     role="button"
-                    tabIndex={0}
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter" || e.key === " ")
-                        handleItemAdd(item.idProduto);
-                    }}
+                    tabIndex={0}                 
                   >
                     <span>{item.nomeProduto}</span>
                     <span className="text-sm text-gray-500">
                       {item.quantidadeEstoque} em estoque
                     </span>
+                    {/* TODO: Itens Management */}
                   </div>
                 ))
               ) : (
@@ -277,30 +259,22 @@ function ClosureRegisterModal({
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end border-t border-gray-200 bg-white px-6 py-4">
+          <div className="flex justify-end border-t gap-4 border-gray-200 bg-white px-6 py-4">
+            <button
+              className="rounded-md bg-red-600 px-6 py-2 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+              onClick={handleStockClosureItensAudit}
+            >
+              🆕 Gerar Fechamento
+            </button>
             <button
               type="submit"
               className="rounded-md bg-red-600 px-6 py-2 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
             >
-              Salvar Fechamento
+              📂Salvar Fechamento
             </button>
           </div>
         </div>
       </form>
-
-      {openItemModal && (
-        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black bg-opacity-50">
-          <ProductModal
-            title="Alterar item no fechamento"
-            product={selectedProduct}
-            isNewProduct={true}
-            isTransaction={true}
-            postSaveFunc={handlePostAddItem}
-            closeFunc={() => handleItemModalVisibility(false)}
-            isClosure={true}
-          />
-        </div>
-      )}
     </div>
   );
 }

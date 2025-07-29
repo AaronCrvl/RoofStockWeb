@@ -1,15 +1,20 @@
+// ================== Imports ==================
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/ui/Footer";
-import homeStock from '../assets/images/HomeStock.jpg';
+import homeStock from "../assets/images/HomeStock.jpg";
 
+// ================== Component ==================
 function Home() {
+  // ====== State ======
   const navigate = useNavigate();
 
+  // ====== Event Handlers ======
   const handleRedirect = (page) => {
     navigate("/".concat(page));
   };
 
+  // ====== Render ======
   return (
     <div className="h-screen bg-white">
       {/* TopNav */}
@@ -39,7 +44,7 @@ function Home() {
             },
           ].map((item, index) => {
             return (
-              <div className="text-xl" id={index}>
+              <div className="text-xl" key={index}>
                 <span className="font-bold" onClick={handleRedirect(item.link)}>
                   {item.name}
                 </span>

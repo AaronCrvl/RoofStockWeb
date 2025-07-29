@@ -1,8 +1,11 @@
+// ================== Imports ==================
 import api from "./api.services";
 import { toast } from "react-toastify";
 
+// ================== Constants ==================
 const route = "/Stock";
 
+// ================== Endpoints ==================
 // GET - Get stock by ID
 export const getStockById = async (id) => {
   try {
@@ -19,7 +22,7 @@ export const getStockById = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock by ID:", err);
-    toast.error(err)
+    toast.error(err);
   }
 };
 
@@ -37,7 +40,7 @@ export const GetStockByUser = async (idUser) => {
     }
   } catch (err) {
     console.error("Error getting stock by user ID:", err);
-    toast.error(err)
+    toast.error(err);
   }
 };
 
@@ -71,7 +74,7 @@ export const createStock = async (newStock) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast.error(err)
+    toast.error(err);
   }
 };
 
@@ -91,7 +94,7 @@ export const updateStock = async (id, updatedStock) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast.error(err)
+    toast.error(err);
   }
 };
 
@@ -111,7 +114,7 @@ export const deleteStock = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast.error(err)
+    toast.error(err);
   }
 };
 
@@ -131,18 +134,18 @@ export const deactivateStock = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast.error(err)
+    toast.error(err);
   }
 };
 
 // PUT - Activate stock
 export const activateStock = async (id) => {
   try {
-     const response = await api.patch(`${route}/Activate`, null, {
-       params: {
-         id: id,
-       },
-     });
+    const response = await api.patch(`${route}/Activate`, null, {
+      params: {
+        id: id,
+      },
+    });
 
     if (response.ok) {
       return await response.json();
@@ -151,6 +154,6 @@ export const activateStock = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock by supervisor ID:", err);
-    toast.error(err)
+    toast.error(err);
   }
 };

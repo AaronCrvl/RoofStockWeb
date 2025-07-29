@@ -15,15 +15,16 @@ const Login = () => {
   const navigate = useNavigate();
 
   const onSubmitLogin = (data) => {        
-    Authenticate(data).then((response) => {
-      if (localStorage.getItem("token") != null) {
+    Authenticate(data).then(() => {
+      if (
+        localStorage.getItem("token") != null &&
+        localStorage.getItem("token").length > 0
+      ) {
         setLogged(true);
-        setAdmin(response.admin);        
+        setAdmin(false);
         admin ? navigate("/adminDashboard") : navigate("/dashboard");
         toast.success("Login realizado com sucesso.");
-      }
-      else 
-        toast.error("Falha ao realizar login.");
+      } else toast.error("Falha ao realizar login.");
     });
   };
 

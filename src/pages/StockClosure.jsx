@@ -1,6 +1,7 @@
+// ================== Imports ==================
 import React, { useEffect, useState } from "react";
 import { PageContainer } from "../components/PageContainer/index";
-import { getStockClosuresByStock } from "../services/api/stockClosure.services";
+import { GetStockClosureByStock } from "../services/api/stockClosure.services";
 import StockControl from "../components/StockControl";
 import { useUser } from "../contexts/UserContext";
 import { GetStockByUser } from "../services/api/stock.service";
@@ -10,6 +11,7 @@ import { formatdateToInput } from "../utils/dateFunctions.util";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 import ClosureRegisterModal from "../components/StockClosure/ClosureRegisterModal";
 
+// ================== Constants ==================
 const fakeAvailableProducts = [
   { idProduto: 1, nomeProduto: "Produto A", quantidadeEstoque: 10 },
   { idProduto: 2, nomeProduto: "Produto B", quantidadeEstoque: 5 },
@@ -75,7 +77,9 @@ const STOCK_CLOSURE = [
   },
 ];
 
+// ================== Components ==================
 function StockClosure() {
+  // ====== State ======
   const { userId } = useUser();
 
   const [stocks, setStocks] = useState(STOCKS_LIST);
@@ -83,7 +87,6 @@ function StockClosure() {
   const [stockClosureGridView, setStockClosureGridView] =
     useState(STOCK_CLOSURE);
 
-  // For modal control: store closure and item being edited
   const [modalOpen, setModalOpen] = useState(false);
   const [editingClosureId, setEditingClosureId] = useState(null);
   const [editingItemIndex, setEditingItemIndex] = useState(null);
@@ -97,26 +100,30 @@ function StockClosure() {
 
   useEffect(() => {
     if (!stocks.length && userId) {
-      setStocks(GetStockByUser(userId));
+      GetStockByUser(userId).then((data) => {
+        setStocks(data);
+      });
     }
   }, [stocks, userId]);
 
   useEffect(() => {
     if (!stockClosure.length && stocks.length > 0) {
-      setStockClosure(getStockClosuresByStock(stocks[0].idEstoque));
-      setStockClosureGridView(getStockClosuresByStock(stocks[0].idEstoque));
+      GetStockClosureByStock(stocks[0].idEstoque).then((stocks) => {
+        setStockClosure(GetStockClosureByStock(stocks[0].idEstoque));
+        setStockClosureGridView(GetStockClosureByStock(stocks[0].idEstoque));
+      });
     }
   }, [stocks, stockClosure]);
 
+  // ====== Event Handlers ======
   const handleStockSelection = (stockId) => {
-    // Load closures for selected stock (fake here)
     console.log("Selected Stock:", stockId);
-    const closures = getStockClosuresByStock(stockId);
-    setStockClosure(closures);
-    setStockClosureGridView(closures);
+    GetStockClosureByStock(stockId).then((closures) => {
+      setStockClosure(closures);
+      setStockClosureGridView(closures);
+    });
   };
 
-  // Filter closures list according to form filters
   const handleGridSelection = () => {
     const { dataFechamento, erro } = getValues();
 
@@ -135,57 +142,20 @@ function StockClosure() {
     setStockClosureGridView(filtered);
   };
 
-  // Open modal to edit a specific item in a closure
-  const openEditModal = (closureId, itemIndex) => {
+  const handleOpenEditModal = (closureId, itemIndex) => {
     setEditingClosureId(closureId);
     setEditingItemIndex(itemIndex);
     setModalOpen(true);
   };
 
-  // Save item changes from modal
-  const handleSaveItem = (updatedItem) => {
-    setStockClosure((prev) => {
-      // Find closure index
-      const closureIndex = prev.findIndex(
-        (c) => c.idFechamento === editingClosureId
-      );
-      if (closureIndex === -1) return prev;
-
-      // Copy closure and its itens
-      const updatedClosure = { ...prev[closureIndex] };
-      updatedClosure.itens = [...updatedClosure.itens];
-
-      // Replace edited item
-      updatedClosure.itens[editingItemIndex] = updatedItem;
-
-      // Replace closure in array
-      const newClosures = [...prev];
-      newClosures[closureIndex] = updatedClosure;
-
-      // Also update filtered view
-      setStockClosureGridView(newClosures);
-
-      return newClosures;
-    });
-
-    setModalOpen(false);
-    setEditingClosureId(null);
-    setEditingItemIndex(null);
-  };
-
-  // Open modal for adding a new closure (optional)
-  const openAddClosureModal = () => {
-    // You may implement adding a new closure with default empty item
-    // For now, just open modal with no editingClosureId and itemIndex -1
+  const handleNewClosureModalView = () => {
     setEditingClosureId(null);
     setEditingItemIndex(-1);
     setModalOpen(true);
   };
 
-  // Prepare item to edit (existing or new)
-  const getEditingItem = () => {
+  const handleGetEditingItem = () => {
     if (editingClosureId === null && editingItemIndex === -1) {
-      // New item case
       return {
         idProduto: null,
         nomeProduto: "",
@@ -204,6 +174,42 @@ function StockClosure() {
     return closure.itens[editingItemIndex];
   };
 
+  // ====== Callback Functions ======
+  const postSaveItem = (isEdit, returnedItem) => {
+    if (isEdit) {
+      setStockClosure((prev) => {
+        const closureIndex = prev.findIndex(
+          (c) => c.idFechamento === editingClosureId
+        );
+        if (closureIndex === -1) return prev;
+
+        const updatedClosure = { ...prev[closureIndex] };
+        updatedClosure.itens = [...updatedClosure.itens];
+        updatedClosure.itens[editingItemIndex] = returnedItem;
+
+        const newClosures = [...prev];
+        newClosures[closureIndex] = updatedClosure;
+
+        setStockClosureGridView(newClosures);
+        setStockClosure(newClosures);
+      });
+
+      setEditingClosureId(returnedItem.idFechamento);
+      setEditingItemIndex(
+        stockClosure.findIndex(
+          (closure) => closure.idFechamento == returnedItem.idFechamento
+        )
+      );
+    } else {
+      var newClosures = [...stockClosure, returnedItem];
+      setStockClosure(newClosures);
+
+      setEditingClosureId(null);
+      setEditingItemIndex(null);
+    }
+  };
+
+  // ====== Render ======
   return (
     <Layout>
       <PageContainer.Root>
@@ -245,7 +251,7 @@ function StockClosure() {
               </button>
               <button
                 className="ml-4 p-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
-                onClick={openAddClosureModal}
+                onClick={handleNewClosureModalView}
               >
                 Adicionar Fechamento
               </button>
@@ -255,7 +261,7 @@ function StockClosure() {
               <div className="grid grid-cols-5 gap-4 mb-4 text-sm text-gray-800 bg-gray-300 p-3 rounded-md font-semibold shadow-sm">
                 <span>Data Fechamento</span>
                 <span>Data Inicial Fechamento</span>
-                <span>Data Final Fechamento</span>                
+                <span>Data Final Fechamento</span>
                 <span>Erro</span>
                 <span>Itens</span>
               </div>
@@ -306,7 +312,7 @@ function StockClosure() {
                               className="p-2 bg-blue-600 rounded-lg hover:bg-blue-900 text-white"
                               aria-label="Editar"
                               onClick={() =>
-                                openEditModal(closure.idFechamento, index)
+                                handleOpenEditModal(closure.idFechamento, index)
                               }
                             >
                               <PencilIcon className="w-4 h-4" />
@@ -316,7 +322,6 @@ function StockClosure() {
                               className="p-2 bg-red-600 rounded-lg hover:bg-red-900 text-white"
                               aria-label="Excluir"
                               onClick={() => {
-                                // Handle item delete here
                                 setStockClosure((prev) => {
                                   const closureIndex = prev.findIndex(
                                     (c) =>
@@ -354,11 +359,12 @@ function StockClosure() {
 
           {modalOpen && (
             <ClosureRegisterModal
-              stockId={stocks[0]?.idEstoque}
-              isEdit={true}
-              closureItemEdit={getEditingItem()}
-              closeFunc={() => setModalOpen(false)}
-              postSaveFunc={handleSaveItem}
+              isEdit={
+                editingItemIndex == null || editingItemIndex <= 0 ? false : true
+              }
+              closureItemEdit={handleGetEditingItem}
+              closeFunc={setModalOpen}
+              postSaveFunc={postSaveItem}
               availableItensList={fakeAvailableProducts}
             />
           )}

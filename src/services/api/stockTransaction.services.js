@@ -1,8 +1,11 @@
+// ================== Imports ==================
 import api from "./api.services";
 import { toast } from "react-toastify";
 
+// ================== Constants ==================
 const route = "/StockTransaction";
 
+// ================== Endpoints ==================
 export const CreateStockTransaction = async (transaction) => {
   try {
     const response = await api.post(`${route}/Create`, transaction);
@@ -14,7 +17,7 @@ export const CreateStockTransaction = async (transaction) => {
     }
   } catch (err) {
     console.error("Error getting stock transaction: ", err);
-    toast.error(err)
+    toast.error(err);
   }
 };
 
@@ -33,7 +36,7 @@ export const GetStockTransactionByStock = async (stockId) => {
     }
   } catch (err) {
     console.error("Error getting stock transaction: ", err);
-    toast.error(err)
+    toast.error(err);
   }
 };
 
@@ -48,7 +51,22 @@ export const UpdateStockTransaction = async (transaction) => {
     }
   } catch (err) {
     console.error("Error getting stock transaction: ", err);
-    toast.error(err)
+    toast.error(err);
+  }
+};
+
+export const UpdateItemStockTransaction = async (transaction) => {
+  try {
+    const response = await api.patch(`${route}/AlterItem`, transaction);
+
+    if (response.ok) {
+      return await response.json();
+    } else {
+      toast.error(`Erro: ${await response.text()}`);
+    }
+  } catch (err) {
+    console.error("Error getting stock transaction: ", err);
+    toast.error(err);
   }
 };
 
@@ -67,11 +85,11 @@ export const DeleteStockTransaction = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock transaction: ", err);
-    toast.error(err)
+    toast.error(err);
   }
 };
 
-export const DeleteStockTransactionItem = async (idMov, idProd) => {
+export const DeleteItemStockTransaction = async (idMov, idProd) => {
   try {
     const response = await api.delete(`${route}/DeleteItem`, {
       params: {

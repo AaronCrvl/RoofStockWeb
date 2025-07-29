@@ -1,21 +1,24 @@
+// ================== Imports ==================
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Create } from "../../services/api/user.services";
+import { CreateUser } from "../../services/api/user.services";
 
+// ================== Component ==================
 const CreateAccount = () => {
+  // ====== State ======
   const navigate = useNavigate();
-
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
+  // ====== Event Handlers ======
   const onSubmitCreate = async (data) => {
     try {
-      Create(data).then((response) => {
+      CreateUser(data).then((response) => {
         console.log(response);
       });
     } catch (err) {
@@ -23,6 +26,7 @@ const CreateAccount = () => {
     }
   };
 
+  // ====== Render ======
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-white-500/50 px-6">
       <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">

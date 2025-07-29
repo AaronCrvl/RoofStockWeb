@@ -1,3 +1,4 @@
+// ================== Imports ==================
 import React, { useEffect, useState } from "react";
 import { PageContainer } from "../components/PageContainer/index";
 import { GetStockTransactionByStock } from "../services/api/stockTransaction.services";
@@ -17,14 +18,14 @@ import {
   // exportTransactionToPdf,
   exportAllTransactionsToPdf,
 } from "../utils/PDF/pdfGenerator.utils";
-
 import {
   CreateStockTransaction,
   UpdateStockTransaction,
   DeleteStockTransaction,
+  DeleteItemStockTransaction,
 } from "../services/api/stockTransaction.services";
-import { DeleteStockTransactionItem } from "../services/api/stockTransaction.services";
 
+// ================== Constants ==================
 const STOCK_TRANSACTION = [
   {
     idMovimentacao: 1,
@@ -290,7 +291,9 @@ const PRODUCT_LIST = [
   },
 ];
 
+// ================== Component ==================
 function StockTransaction() {
+  // ====== State ======
   const { userId } = useUser();
 
   const { companyId } = useCompany();
@@ -323,19 +326,30 @@ function StockTransaction() {
   });
 
   useEffect(() => {
-    if (products == null && stocks != null)
-      setProducts(GetStockProducts(stocks[0].idEstoque));
+    if (products == null && stocks != null) {
+      GetStockProducts(stocks[0].idEstoque).then((data) => {
+        setProducts(data);
+      });
+    }
   }, [products, stocks]);
 
   useEffect(() => {
-    if (stocks == null && userId) setStocks(GetStockByUser(userId));
+    if (stocks == null && userId) {
+      GetStockByUser(userId).then((data) => {
+        setStocks(data);
+      });
+    }
   }, [stocks, companyId, userId]);
 
   useEffect(() => {
-    if (stockTransaction == null)
-      setStockTransaction(GetStockTransactionByStock(stocks[0].idEstoque));
+    if (stockTransaction == null) {
+      GetStockTransactionByStock(stocks[0].idEstoque).then((data) => {
+        setStockTransaction(data);
+      });
+    }
   }, [stocks, stockTransaction]);
 
+  // ====== Event Handlers ======
   const handleStockSelection = (childStockSelect) => {
     try {
       setStockTransaction(GetStockTransactionByStock(childStockSelect));
@@ -458,7 +472,7 @@ function StockTransaction() {
   };
 
   const onItemExclusion = (idMov, idItem) => {
-    DeleteStockTransactionItem(idMov, idItem)
+    DeleteItemStockTransaction(idMov, idItem)
       .then(() => {
         const newStockTran = stockTransaction.map((stock) => {
           return {
@@ -515,6 +529,7 @@ function StockTransaction() {
     setShowMessageModal(true);
   };
 
+  // ====== Render ======
   return (
     <Layout>
       <PageContainer.Root>

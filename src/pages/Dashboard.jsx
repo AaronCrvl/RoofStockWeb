@@ -1,3 +1,4 @@
+// ================== Imports ==================
 import React, { useEffect, useState } from "react";
 import { useUser } from "../contexts/UserContext";
 import { PageContainer } from "../components/PageContainer/index";
@@ -20,6 +21,7 @@ import { dateDiffForProductExpireDate } from "../utils/dateFunctions.util";
 import StockControl from "../components/StockControl";
 import { toast } from "react-toastify";
 
+// ================== Constants ==================
 const STOCKS_LIST = [
   {
     idEstoque: 1,
@@ -109,7 +111,9 @@ const PRODUCT_LIST = [
   },
 ];
 
+// ================== Component ==================
 const Dashboard = () => {
+  // ====== State ======
   const { userId } = useUser();
 
   const [stocks, setStocks] = useState(STOCKS_LIST);
@@ -122,16 +126,22 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (stocks == null && userId) {
-      setStocks(GetStockByUser(userId));
-      setStocksOverview(stocks[0]);
+      GetStockByUser(userId).then((data) => {
+        setStocks(data);
+        setStocksOverview(data[0]);
+      });
     }
   }, [stocks, userId]);
 
   useEffect(() => {
-    if (products == null && stocks != null)
-      setProducts(GetStockProducts(stocks[0].idEstoque));
+    if (products == null && stocks != null){
+      GetStockProducts(stocks[0].idEstoque).then((data) => {
+        setProducts(data);
+      });
+    }      
   }, [products, stocks]);
 
+  // ====== Event Handlers ======
   const handleStockSelection = (childStockSelect) => {
     const item = stocks.find((stock) => stock.idEstoque == childStockSelect);
     setStocksOverview({
@@ -164,6 +174,7 @@ const Dashboard = () => {
     setSelectedProduct(product);
   };
 
+  // ====== Callback Functions ======
   const postSaveProduct = (product, isNew) => {
     if (isNew) {
       AddStockProduct(product)
@@ -205,7 +216,7 @@ const Dashboard = () => {
         .catch(() => {
           toast.error("Ocorreu um erro ao adicionar o produto ao estoque.");
         });
-    } else {      
+    } else {
       const updatedProductList = products.map((prod) =>
         prod.idProduto === product.idProduto
           ? {
@@ -232,7 +243,7 @@ const Dashboard = () => {
         .catch(() => {
           toast.error("Ocorreu um erro ao atualizar o produto no estoque.");
         });
-    }    
+    }
   };
 
   const postDeleteProduct = (idProduto) => {
@@ -252,6 +263,7 @@ const Dashboard = () => {
       });
   };
 
+  // ====== Render ======
   return (
     <Layout>
       <PageContainer.Root>

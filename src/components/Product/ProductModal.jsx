@@ -23,7 +23,7 @@ function ProductModal({
       nomeProduto: isNewProduct == null ? "" : product.nomeProduto,
       idMarca: isNewProduct == null ? 0 : product.idMarca,
       valor: isNewProduct == null ? 0 : product.valor,
-      quantidade: isNewProduct == null ? 0 : product.quantidade,
+      quantidade: isNewProduct == null ? 0 : (product.quantidade == null ? product.quantidadeEstoque : 0),
       dataValidade:
         isNewProduct == null ? formatdateToInput() : product.dataValidade,
       promocao: isNewProduct == null ? false : product.promocao,
@@ -201,7 +201,7 @@ function ProductModal({
                           <input
                             name="quantidade"
                             type="number"
-                            readOnly={isNewProduct ? false : true}
+                            readOnly={isNewProduct ? false : (isClosure ? true : false)}
                             {...register("quantidade", {
                               required: "A quantidade é obrigatória.",
                               min: {

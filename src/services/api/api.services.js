@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getBaseUrl } from "../../Utils/integration.utils";
+// import { getBaseUrl } from "../../Utils/integration.utils";
 
 const onRequest = async (config) => {
   if (localStorage.getItem("token").length > 0) {
@@ -14,7 +14,7 @@ const setupInterceptorsTo = (axiosInstance) => {
 };
 
 const api = axios.create({
-  baseURL: getBaseUrl("dev"),
+  baseURL: "https://localhost:7237",
   headers: {
     Accept: "application/json",
     "Content-Tye": "application/json",

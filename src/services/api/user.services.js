@@ -1,9 +1,11 @@
 import api from "./api.services";
 import { toast } from "react-toastify";
 
+const route = "/User";
+
 export const Create = async (data) => {
   try {
-    const response = await api.post("/User/Create", {
+    const response = await api.post(route.concat("/Create"), {
       cnpjEmpresa: data.cnpj.toString(),
       cpf: data.cpf.toString(),
       email: data.email,

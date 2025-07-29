@@ -1,9 +1,11 @@
 import api from "./api.services";
 import { toast } from "react-toastify";
 
+const route = "/Auth";
+
 export const Authenticate = async (data) => {
   try {
-    const response = await api.post("/Auth/Authenticate", {
+    const response = await api.post(route.concat("/Authenticate"), {
       cnpj: data.cnpj,
       login: data.username,
       senha: data.senha,

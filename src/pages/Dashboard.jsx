@@ -7,8 +7,13 @@ import {
   ArrowDownIcon,
   CalendarIcon,
 } from "@heroicons/react/24/solid";
-import { getStockByUser } from "../services/api/stock.service";
-import { getStockProducts } from "../services/api/stockProduct.services";
+import { GetStockByUser } from "../services/api/stock.service";
+import {
+  GetStockProducts,
+  AddStockProduct,
+  UpdateStockProduct,
+  DeleteStockProduct,
+} from "../services/api/stockProduct.services";
 import ProductModal from "../components/Product/ProductModal";
 import Layout from "../layout/Layout";
 import { dateDiffForProductExpireDate } from "../utils/dateFunctions.util";
@@ -117,14 +122,14 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (stocks == null && userId) {
-      setStocks(getStockByUser(userId));
+      setStocks(GetStockByUser(userId));
       setStocksOverview(stocks[0]);
     }
   }, [stocks, userId]);
 
   useEffect(() => {
     if (products == null && stocks != null)
-      setProducts(getStockProducts(stocks[0].idEstoque));
+      setProducts(GetStockProducts(stocks[0].idEstoque));
   }, [products, stocks]);
 
   const handleStockSelection = (childStockSelect) => {
@@ -139,22 +144,8 @@ const Dashboard = () => {
       overviewMensal: item.overviewMensal,
     });
 
-    new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(
-          new Response(JSON.stringify("Produtos carregados com sucesso."), {
-            status: 200, // Ok
-            headers: {
-              "Content-Type": "application/json; utf-8",
-            },
-          })
-        );
-      }, 5000);
-    });
-
-    // TODO: Backend integration
-    //setProducts(getStockProducts(selectedStockId));
-    //setProductsGridView([...products]);
+    setProducts(GetStockProducts(childStockSelect));
+    setProductsGridView([...products]);
   };
 
   const handleGridTextSearch = (e) => {
@@ -175,39 +166,46 @@ const Dashboard = () => {
 
   const postSaveProduct = (product, isNew) => {
     if (isNew) {
-      const newList = [...products, product];
-      setProducts(newList);
-      setProductsGridView(newList);
+      AddStockProduct(product)
+        .then(() => {
+          const newList = [...products, product];
+          setProducts(newList);
+          setProductsGridView(newList);
 
-      const stockOverViewUpated = stocks.map((stock) =>
-        stock.idEstoque == product.idEstoque
-          ? {
-              ...stock,
-              overviewDiario: {
-                produtosEmEstoque: stock.overviewDiario.produtosEmEstoque,
-                entradasHoje: stock.overviewDiario.entradasHoje + 1,
-                promocoesAtivas: product.promocao
-                  ? stock.overviewDiario.promocoesAtivas + 1
-                  : stock.overviewDiario.entradasHoje,
-                vencimentosProximos:
-                  dateDiffForProductExpireDate(
-                    new Date(),
-                    product.dataValidade
-                  ) > 14
-                    ? stock.overviewDiario.vencimentosProximos
-                    : stock.overviewDiario.vencimentosProximos + 1,
-              },
-            }
-          : stock
-      );
+          const stockOverViewUpated = stocks.map((stock) =>
+            stock.idEstoque == product.idEstoque
+              ? {
+                  ...stock,
+                  overviewDiario: {
+                    produtosEmEstoque: stock.overviewDiario.produtosEmEstoque,
+                    entradasHoje: stock.overviewDiario.entradasHoje + 1,
+                    promocoesAtivas: product.promocao
+                      ? stock.overviewDiario.promocoesAtivas + 1
+                      : stock.overviewDiario.entradasHoje,
+                    vencimentosProximos:
+                      dateDiffForProductExpireDate(
+                        new Date(),
+                        product.dataValidade
+                      ) > 14
+                        ? stock.overviewDiario.vencimentosProximos
+                        : stock.overviewDiario.vencimentosProximos + 1,
+                  },
+                }
+              : stock
+          );
 
-      setStocks(stockOverViewUpated);
-      const selectedStock = stocks.find(
-        (stock) => stock.idEstoque == stocksOverview.idEstoque
-      );
-      setStocksOverview(selectedStock);
-      toast.success("Produto adicionado com sucesso.");
-    } else {
+          setStocks(stockOverViewUpated);
+          const selectedStock = stocks.find(
+            (stock) => stock.idEstoque == stocksOverview.idEstoque
+          );
+          setStocksOverview(selectedStock);
+          toast.success("Produto adicionado com sucesso.");
+          handleProductModal(false, null);
+        })
+        .catch(() => {
+          toast.error("Ocorreu um erro ao adicionar o produto ao estoque.");
+        });
+    } else {      
       const updatedProductList = products.map((prod) =>
         prod.idProduto === product.idProduto
           ? {
@@ -221,23 +219,34 @@ const Dashboard = () => {
           : prod
       );
 
-      setProducts(updatedProductList);
-      setProductsGridView(updatedProductList);
-      toast.success("Produto atualizado com sucesso.");
-    }
-
-    handleProductModal(false, null);
+      UpdateStockProduct(product.idProduto, updatedProductList)
+        .then(() => {
+          setProducts(updatedProductList);
+          setProductsGridView(updatedProductList);
+          toast.success("Produto atualizado com sucesso.");
+          handleProductModal(false, null);
+        })
+        .catch(() => {
+          toast.error("Ocorreu um erro ao atualizar o produto no estoque.");
+        });
+    }    
   };
 
   const postDeleteProduct = (idProduto) => {
-    const newProductList = products.filter(
-      (prod) => prod.idProduto !== idProduto
-    );
+    DeleteStockProduct(idProduto)
+      .then(() => {
+        const newProductList = products.filter(
+          (prod) => prod.idProduto !== idProduto
+        );
 
-    setProducts(newProductList);
-    setProductsGridView(newProductList);
-    toast.success("Produto removido com sucesso.");
-    handleProductModal(false, null);
+        setProducts(newProductList);
+        setProductsGridView(newProductList);
+        toast.success("Produto removido com sucesso.");
+        handleProductModal(false, null);
+      })
+      .catch(() => {
+        toast.error("Ocorreu um erro ao remover o produto do estoque.");
+      });
   };
 
   return (
@@ -439,6 +448,7 @@ const Dashboard = () => {
                                   Math.max(
                                     ...products.map((prod) => prod.idProduto)
                                   ) + 1,
+                                idEstoque: 0,
                                 nomeProduto: "",
                                 idMarca: 0,
                                 valor: 0,

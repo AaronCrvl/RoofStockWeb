@@ -1,10 +1,11 @@
 import api from "./api.services";
 import { toast } from "react-toastify";
 
-// POST - Create stock transaction
-export const createStockTransaction = async (transaction) => {
+const route = "/StockTransaction";
+
+export const CreateStockTransaction = async (transaction) => {
   try {
-    const response = await api.post(`/StockTransaction/Create`, transaction);
+    const response = await api.post(`${route}/Create`, transaction);
 
     if (response.ok) {
       return await response.json();
@@ -13,14 +14,17 @@ export const createStockTransaction = async (transaction) => {
     }
   } catch (err) {
     console.error("Error getting stock transaction: ", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
-// GET - Get stock transaction by ID
-export const getStockTransactionById = async (id) => {
+export const GetStockTransactionByStock = async (stockId) => {
   try {
-    const response = await api.get(`/StockTransaction/GetById/${id}`);
+    const response = await api.get(`${route}/GetByStock`, {
+      params: {
+        stockId: stockId,
+      },
+    });
 
     if (response.ok) {
       return await response.json();
@@ -29,16 +33,13 @@ export const getStockTransactionById = async (id) => {
     }
   } catch (err) {
     console.error("Error getting stock transaction: ", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
-// GET - Get stock transactions by stock ID
-export const getStockTransactionsByStock = async (stockId) => {
+export const UpdateStockTransaction = async (transaction) => {
   try {
-    const response = await api.get(
-      `/StockTransaction/ListByWarehouse/${stockId}`
-    );
+    const response = await api.patch(`${route}/Alter`, transaction);
 
     if (response.ok) {
       return await response.json();
@@ -47,14 +48,17 @@ export const getStockTransactionsByStock = async (stockId) => {
     }
   } catch (err) {
     console.error("Error getting stock transaction: ", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
-// PUT - Edit stock transaction (update)
-export const editStockTransaction = async (transaction) => {
+export const DeleteStockTransaction = async (id) => {
   try {
-    const response = await api.put(`/StockTransaction/Update`, transaction);
+    const response = await api.delete(`${route}/Delete`, {
+      params: {
+        id: id,
+      },
+    });
 
     if (response.ok) {
       return await response.json();
@@ -63,14 +67,18 @@ export const editStockTransaction = async (transaction) => {
     }
   } catch (err) {
     console.error("Error getting stock transaction: ", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
-// DELETE - Delete stock transaction
-export const deleteStockTransaction = async (id) => {
-  try {    
-    const response = await api.delete(`/StockTransaction/Delete/${id}`);
+export const DeleteStockTransactionItem = async (idMov, idProd) => {
+  try {
+    const response = await api.patch(`${route}/DeleteItem`, {
+      params: {
+        idMov: idMov,
+        idProd: idProd,
+      },
+    });
 
     if (response.ok) {
       return await response.json();
@@ -78,7 +86,7 @@ export const deleteStockTransaction = async (id) => {
       toast.error(`Erro: ${await response.text()}`);
     }
   } catch (err) {
-    console.error("Error getting stock transaction: ", err);
-    toast(err);
+    console.error("Error deleting product from stock: ", err);
+    toast.error(err);
   }
 };

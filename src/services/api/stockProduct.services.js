@@ -3,10 +3,9 @@ import { toast } from "react-toastify";
 
 const route = "/Product";
 
-// POST - Add product to stock
-export const addStockProduct = async (stockProduct) => {
+export const AddStockProduct = async (stockProduct) => {
   try {
-    const response = await api.post(`${route}/Create`, stockProduct);
+    const response = await api.post(route.concat(`/Create`), stockProduct);
 
     if (response.ok) {
       return await response.json();
@@ -15,18 +14,13 @@ export const addStockProduct = async (stockProduct) => {
     }
   } catch (err) {
     console.error("Error adding stock:", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
-// GET - List all products from a stock
-export const getStockProducts = async (stockId) => {
+export const GetStockProducts = async (stockId) => {
   try {
-    const response = await api.get(`${route}/GetByStock`, {
-      params: {
-        stockId: stockId,
-      },
-    });
+    const response = await api.get(route.concat(`/GetByStock/${stockId}`));
 
     if (response.ok) {
       return await response.json();
@@ -35,12 +29,11 @@ export const getStockProducts = async (stockId) => {
     }
   } catch (err) {
     console.error("Error getting products in stock:", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
-// PUT - Update product in stock
-export const updateStockProduct = async (id, stockProduct) => {
+export const UpdateStockProduct = async (id, stockProduct) => {
   try {
     const response = await api.patch(`${route}/Alter`, stockProduct, {
       params: {
@@ -55,16 +48,15 @@ export const updateStockProduct = async (id, stockProduct) => {
     }
   } catch (err) {
     console.error("Error altering product:", err);
-    toast(err);
+    toast.error(err)
   }
 };
 
-// DELETE - Remove product in stock
-export const deleteStockProduct = async (id) => {
+export const DeleteStockProduct = async (prodId) => {
   try {
-    const response = await api.delete(`${route}/Delete`, {
-      params: {
-        id: id,
+    const response = await api.patch(`${route}/DeleteItem`, {
+      params: {        
+        idProd: prodId,
       },
     });
 
@@ -74,7 +66,7 @@ export const deleteStockProduct = async (id) => {
       toast.error(`Erro: ${await response.text()}`);
     }
   } catch (err) {
-    console.error("Error getting stock by supervisor ID:", err);
-    toast(err);
+    console.error("Error deleting product from stock: ", err);
+    toast.error(err);
   }
 };

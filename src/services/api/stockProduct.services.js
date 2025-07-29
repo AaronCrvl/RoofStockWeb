@@ -54,7 +54,7 @@ export const UpdateStockProduct = async (id, stockProduct) => {
 
 export const DeleteStockProduct = async (prodId) => {
   try {
-    const response = await api.patch(`${route}/DeleteItem`, {
+    const response = await api.delete(`${route}/DeleteItem`, {
       params: {        
         idProd: prodId,
       },

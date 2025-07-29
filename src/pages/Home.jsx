@@ -37,7 +37,7 @@ function Home() {
               name: "Preços",
               link: "/",
             },
-          ].map((index, item) => {
+          ].map((item, index) => {
             return (
               <div className="text-xl" id={index}>
                 <span className="font-bold" onClick={handleRedirect(item.link)}>

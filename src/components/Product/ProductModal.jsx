@@ -302,11 +302,10 @@ function ProductModal({
                         Edite ou altere as propriedades do produto presente no
                         estoque.
                       </p>
-
                       <>
                         <div
                           className={"mt-10".concat(
-                            isTransaction ? " opacity-50 " : " opacity-10 "
+                            isTransaction ? " opacity-50 " : " opacity-100 "
                           )}
                         >
                           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -329,7 +328,7 @@ function ProductModal({
                         </div>
                         <div
                           className={"mt-10".concat(
-                            isTransaction ? " opacity-50 " : " opacity-10 "
+                            isTransaction ? " opacity-50 " : " opacity-100 "
                           )}
                         >
                           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -356,7 +355,7 @@ function ProductModal({
                         </div>
                         <div
                           className={"mt-10".concat(
-                            isTransaction ? " opacity-50 " : " opacity-10 "
+                            isTransaction ? " opacity-50 " : " opacity-100 "
                           )}
                         >
                           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -383,7 +382,7 @@ function ProductModal({
                         </div>
                         <div
                           className={"mt-10".concat(
-                            isTransaction ? " opacity-50 " : " opacity-10 "
+                            isTransaction ? " opacity-50 " : " opacity-100 "
                           )}
                         >
                           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -426,7 +425,7 @@ function ProductModal({
                         </div>
                         <div
                           className={"mt-10".concat(
-                            isTransaction ? " opacity-50 " : " opacity-10 "
+                            isTransaction ? " opacity-50 " : " opacity-100 "
                           )}
                         >
                           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -450,7 +449,7 @@ function ProductModal({
                         </div>
                         <div
                           className={"mt-6 flex items-center gap-2".concat(
-                            isTransaction ? " opacity-50 " : " opacity-10 "
+                            isTransaction ? " opacity-50 " : " opacity-100 "
                           )}
                         >
                           <input

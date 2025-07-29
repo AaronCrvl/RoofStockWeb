@@ -12,6 +12,7 @@ export const Authenticate = async (data) => {
     if (response.status == 200) {
       var token = response.data.token;
       localStorage.setItem("token", token);
+      return response.data;
     } else {
       toast.error(`Erro ao autenticar: ${await response.text()}`);
     }

@@ -173,7 +173,7 @@ const Dashboard = () => {
     setSelectedProduct(product);
   };
 
-  const postSaveProduct = (product, isNew) => {
+  const postSaveProduct = (id, product, isNew) => {
     if (isNew) {
       const newList = [...products, product];
       setProducts(newList);
@@ -449,6 +449,8 @@ const Dashboard = () => {
                         }
                         postSaveFunc={postSaveProduct}
                         postDeleteFunc={postDeleteProduct}
+                        isClosure={false}
+                        isTransaction={false}
                       />
                     </>
                   )}

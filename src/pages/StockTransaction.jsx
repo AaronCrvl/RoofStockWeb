@@ -286,6 +286,7 @@ const PRODUCT_LIST = [
 function StockTransaction() {
   const { userId } = useUser();
   const { companyId } = useCompany();
+
   const [stocks, setStocks] = useState(STOCKS_LIST);
   const [stockTransaction, setStockTransaction] = useState(STOCK_TRANSACTION);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -473,6 +474,14 @@ function StockTransaction() {
     setShowMessageModal(false);
   };
 
+  const handleTransactionExclusion = (idMov) => {
+    var newTransactionList = stockTransaction.filter(
+      (tran) => tran.idMovimentacao != idMov
+    );
+
+    setStockTransaction(newTransactionList);
+  };
+
   const handleTransactionItemDeletion = (idMov, idItem) => {
     setMessageModal({
       message: "Tem certeza que deseja remover o item da movimentaçao?",
@@ -571,11 +580,12 @@ function StockTransaction() {
           </div>
 
           <div className="h-screen overflow-y-auto p-6 bg-gray-100">
-            <div className="grid grid-cols-4 gap-4 mb-4 text-sm text-gray-800 bg-gray-300 p-3 rounded-md font-semibold shadow-sm">
+            <div className="grid grid-cols-5 gap-4 mb-4 text-sm text-gray-800 bg-gray-300 p-3 rounded-md font-semibold shadow-sm">
               <span>Data Movimentação</span>
               <span>Entrada</span>
               <span>Processado</span>
               <span>Itens</span>
+              <span>Ações</span>
             </div>
 
             {gridView
@@ -588,7 +598,7 @@ function StockTransaction() {
                   key={transaction.idMovimentacao}
                   className="mb-4 border rounded-md shadow-xl bg-white"
                 >
-                  <summary className="grid grid-cols-4 gap-4 p-4 text-gray-900 hover:text-blue-600 hover:font-medium transition-all duration-300 cursor-pointer hover:scale-110">
+                  <summary className="grid grid-cols-5 gap-4 p-4 text-gray-900 hover:text-blue-600 hover:font-medium transition-all duration-300 cursor-pointer hover:scale-110">
                     <span>
                       {transaction.dataMovimentacao == undefined
                         ? ""
@@ -599,6 +609,13 @@ function StockTransaction() {
                     </span>
                     <span>{transaction.processado ? "Sim" : "Não"}</span>
                     <span>{transaction.itens.length}</span>
+                    <div
+                      className="p-2 bg-red-600 w-min rounded-lg hover:bg-red-900 hover:cursor-pointer transition-all duration-300"
+                      aria-label="Excluir"
+                      onClick={() => handleTransactionExclusion(transaction.id)}
+                    >
+                      <TrashIcon className="w-3 h-3 text-white" />
+                    </div>
                   </summary>
 
                   <form className="p-5 bg-blue-200/50 rounded-b-md text-gray-800 border-t">
@@ -675,7 +692,7 @@ function StockTransaction() {
               </svg>
               <span>Export All to PDF</span>
             </button>
-          </div>          
+          </div>
           <>
             {showRegisterModal && (
               <TransactionRegisterModal

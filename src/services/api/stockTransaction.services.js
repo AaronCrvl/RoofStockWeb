@@ -73,7 +73,7 @@ export const DeleteStockTransaction = async (id) => {
 
 export const DeleteStockTransactionItem = async (idMov, idProd) => {
   try {
-    const response = await api.patch(`${route}/DeleteItem`, {
+    const response = await api.delete(`${route}/DeleteItem`, {
       params: {
         idMov: idMov,
         idProd: idProd,

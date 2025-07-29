@@ -4,7 +4,7 @@ import { GetStockTransactionByStock } from "../services/api/stockTransaction.ser
 import StockControl from "../components/StockControl";
 import { useUser } from "../contexts/UserContext";
 import { useCompany } from "../contexts/CompanyContext";
-import { getStockByUser } from "../services/api/stock.service";
+import { GetStockByUser } from "../services/api/stock.service";
 import Layout from "../layout/Layout";
 import TransactionRegisterModal from "../components/StockTransaction/TransactionRegisterModal";
 import { toast } from "react-toastify";
@@ -328,7 +328,7 @@ function StockTransaction() {
   }, [products, stocks]);
 
   useEffect(() => {
-    if (stocks == null && userId) setStocks(getStockByUser(userId));
+    if (stocks == null && userId) setStocks(GetStockByUser(userId));
   }, [stocks, companyId, userId]);
 
   useEffect(() => {

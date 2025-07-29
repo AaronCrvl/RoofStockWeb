@@ -28,7 +28,7 @@ function StockControl({ parentStocks, stockSelectionFunc }) {
         onChange={handleStockSelection}
         className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900"
       >
-        {stocks.map((index, item) => (
+        {stocks.map((item, index) => (
           <option key={item.idEstoque} value={item.idEstoque} id={index}>
             {item.nomeEstoque}
           </option>

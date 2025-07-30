@@ -6,26 +6,27 @@ const Footer = () => {
 
   return (
     <footer className="bg-white border-t border-gray-300 px-4 py-6 text-sm text-gray-600">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-        <p className="text-center md:text-left">
+      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0">
+        <p className="text-center sm:text-left">
           © {new Date().getFullYear()} RoofStock. Todos os direitos reservados.
         </p>
-        <div className="flex space-x-4">
+
+        <div className="flex flex-col sm:flex-row sm:space-x-6 items-center gap-2 sm:gap-0">
           <span
             onClick={() => navigate("/")}
-            className="cursor-pointer hover:text-blue-600 transition-colors duration-300"
+            className="text-gray-600 hover:text-blue-600 transition duration-300"
           >
             Início
           </span>
           <span
             onClick={() => navigate("/sobre")}
-            className="cursor-pointer hover:text-blue-600 transition-colors duration-300"
+            className="text-gray-600 hover:text-blue-600 transition duration-300"
           >
             Sobre
           </span>
           <span
             onClick={() => navigate("/contato")}
-            className="cursor-pointer hover:text-blue-600 transition-colors duration-300"
+            className="text-gray-600 hover:text-blue-600 transition duration-300"
           >
             Contato
           </span>

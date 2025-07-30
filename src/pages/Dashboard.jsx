@@ -253,33 +253,34 @@ const Dashboard = () => {
         </PageContainer.Header>
 
         <PageContainer.Body>
-          <div className="h-screen">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="min-h-screen px-4 sm:px-6 md:px-8">
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
               {[
                 {
                   title: "Produtos em Estoque",
                   value: stocksOverview.overviewDiario.produtosEmEstoque,
-                  icon: <TagIcon className="w-16 h-16 text-orange-500" />,
+                  icon: <TagIcon className="w-10 h-10 text-orange-500" />,
                 },
                 {
                   title: "Entradas Hoje",
                   value: stocksOverview.overviewDiario.entradasHoje,
-                  icon: <ArrowDownIcon className="w-16 h-16 text-orange-500" />,
+                  icon: <ArrowDownIcon className="w-10 h-10 text-orange-500" />,
                 },
                 {
                   title: "Promoções Ativas",
                   value: stocksOverview.overviewDiario.promocoesAtivas,
-                  icon: <TagIcon className="w-16 h-16 text-orange-500" />,
+                  icon: <TagIcon className="w-10 h-10 text-orange-500" />,
                 },
                 {
                   title: "Vencimentos Próximos",
                   value: stocksOverview.overviewDiario.vencimentosProximos,
-                  icon: <CalendarIcon className="w-16 h-16 text-orange-500" />,
+                  icon: <CalendarIcon className="w-10 h-10 text-orange-500" />,
                 },
               ].map(({ title, value, icon }, index) => (
                 <div
                   key={index}
-                  className="p-6 bg-white text-black shadow-md rounded-lg hover:shadow-xl hover:border-orange-500 transition-all duration-300 ease-in-out hover:scale-105 hover:cursor-pointer border border-gray-300"
+                  className="p-4 bg-white text-black shadow-md rounded-lg hover:shadow-xl hover:border-orange-500 transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer border border-gray-200"
                 >
                   <div className="flex items-center space-x-4">
                     {icon}
@@ -296,113 +297,116 @@ const Dashboard = () => {
               ))}
             </div>
 
-            {/* Movimentações Mensais
-          <MonthlyMovement stocksOverview={stocksOverview}></MonthlyMovement> */}
-
-            {/* Lista de Produtos */}
-            <div className="mb-8">
-              <div className="flex bg-white p-4 rounded-lg items-center justify-between space-x-4 mb-4">
-                {/* Search Input */}
-                <div className="flex-1 relative">
-                  <input
-                    type="text"
-                    placeholder="Buscar Produto..."
-                    className="text-black p-2 pl-10 pr-4 border-2 border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    onChange={handleGridTextSearch}
-                  />
-                  {/* Search Icon */}
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M10 16h6M10 12h6m-6-4h6M6 20h12a2 2 0 002-2v-4a2 2 0 00-2-2M6 12a6 6 0 1112 0 6 6 0 01-12 0z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Product Option Select */}
-                <div className="flex-shrink-0">
-                  <select className="p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-black">
-                    <option value="">Selecione a Marca</option>
-                    {["Alcolico", "Sem Alcool"].map((type, index) =>
-                      index > 1 ? (
-                        <></>
-                      ) : (
-                        <option
-                          key={index}
-                          value={type.tipoProduto == "Alcolico" ? 0 : 1}
-                        >
-                          {type}
-                        </option>
-                      )
-                    )}
-                  </select>
-                </div>
-
-                {/* Filter Button */}
-                <div className="flex-shrink-0">
-                  <button className="ml-4 p-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all duration-300">
-                    Filtrar
-                  </button>
+            {/* Search & Filters */}
+            <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-lg items-stretch sm:items-center justify-between mb-4">
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  placeholder="Buscar Produto..."
+                  className="text-black p-2 pl-10 pr-4 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  onChange={handleGridTextSearch}
+                />
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M10 16h6M10 12h6m-6-4h6M6 20h12a2 2 0 002-2v-4a2 2 0 00-2-2M6 12a6 6 0 1112 0 6 6 0 01-12 0z"
+                    />
+                  </svg>
                 </div>
               </div>
+
+              <select className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-black">
+                <option value="">Selecione a Marca</option>
+                {["Alcolico", "Sem Alcool"].map((type, index) => (
+                  <option
+                    key={index}
+                    value={type === "Alcolico" ? 0 : 1}
+                  >
+                    {type}
+                  </option>
+                ))}
+              </select>
+
+              <button className="p-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition duration-300">
+                Filtrar
+              </button>
             </div>
 
-            <div className="bg-white mt-10 p-4 rounded-lg">
-              {/* Search Section */}
-              <div className="mb-10">
-                <div className="flex">
-                  <span className="text-black mr-auto font-bold text-xl">
+            {/* Product Table */}
+            <div className="bg-white mt-10 p-4 rounded-lg overflow-x-auto">
+              {/* Horizontal scroll container for small screens */}
+              <div className="min-w-full md:min-w-[700px]">
+                {/* Header and Button */}
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+                  <h2 className="text-xl font-bold text-black">
                     Controle de Estoque
-                  </span>
+                  </h2>
                   <button
                     onClick={() => handleProductModal(true, true, null)}
-                    className="bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300"
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300 text-sm w-full sm:w-auto"
                   >
                     Adicionar Produto
                   </button>
                 </div>
-              </div>
 
-              <>
-                <div className="grid grid-cols-6 gap-6 mb-1 text-black bg-gray-200 p-2 rounded-lg font-semibold">
+                {/* Table Header */}
+                <div className="hidden md:grid grid-cols-6 gap-4 mb-2 text-black bg-gray-200 p-2 rounded-lg font-semibold">
                   <div>Produto</div>
                   <div>Validade</div>
-                  <div>Quantidade em Estoque</div>
+                  <div>Quantidade</div>
                   <div>Valor</div>
                   <div>Promoção</div>
                   <div>Ações</div>
                 </div>
-                <div>
+
+                {/* Product List */}
+                <div className="space-y-4">
                   {productsGridView.map((product) => (
-                    <div key={product.idProduto}>
-                      <div className="text-black grid grid-cols-6 gap-6 mb-2 p-4 bg-white border-b border-gray-300 hover:border-orange-500 transition-all duration-300 hover:cursor-pointer">
-                        <div className="flex items-center">
-                          <img
-                            src="https://img.icons8.com/ios-filled/50/product.png"
-                            className="w-6 h-6 mr-2"
-                            alt="Product Icon"
-                          />
+                    <div
+                      key={product.idProduto}
+                      className="text-black grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:border-orange-500 transition duration-300"
+                    >
+                      {/* Mobile layout: label + value */}
+                      <div className="flex items-center">
+                        <img
+                          src="https://img.icons8.com/ios-filled/50/product.png"
+                          className="w-5 h-5 mr-2"
+                          alt="Product Icon"
+                        />
+                        <span className="font-medium">
                           {product.nomeProduto}
-                        </div>
-                        <div>{product.dataValidade}</div>
-                        <div>{product.quantidade}</div>
-                        <div>
-                          {"R$".concat(
-                            " ",
-                            parseFloat(product.valor).toFixed(2)
-                          )}
-                        </div>
-                        <div
+                        </span>
+                      </div>
+                      <div>
+                        <span className="md:hidden font-semibold">
+                          Validade:{" "}
+                        </span>
+                        {product.dataValidade}
+                      </div>
+                      <div>
+                        <span className="md:hidden font-semibold">
+                          Quantidade:{" "}
+                        </span>
+                        {product.quantidade}
+                      </div>
+                      <div>
+                        <span className="md:hidden font-semibold">Valor: </span>
+                        R$ {parseFloat(product.valor).toFixed(2)}
+                      </div>
+                      <div>
+                        <span className="md:hidden font-semibold">
+                          Promoção:{" "}
+                        </span>
+                        <span
                           className={
                             product.promocao
                               ? "text-red-600 font-bold"
@@ -410,19 +414,17 @@ const Dashboard = () => {
                           }
                         >
                           {product.promocao ? "Em Promoção" : "Sem Promoção"}
-                        </div>
-
-                        <div className="flex justify-end items-center space-x-4">
-                          <button
-                            className="p-2 bg-orange-600 rounded-lg hover:bg-orange-700 transition-all duration-300"
-                            onClick={() =>
-                              handleProductModal(true, false, product)
-                            }
-                            aria-label="Editar"
-                          >
-                            <PencilIcon className="w-6 h-6 text-white" />
-                          </button>
-                        </div>
+                        </span>
+                      </div>
+                      <div className="flex justify-start md:justify-end items-center space-x-2">
+                        <button
+                          className="p-2 bg-orange-600 rounded-lg hover:bg-orange-700"
+                          onClick={() =>
+                            handleProductModal(true, false, product)
+                          }
+                        >
+                          <PencilIcon className="w-5 h-5 text-white" />
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -463,8 +465,37 @@ const Dashboard = () => {
                       />
                     </>
                   )}
+
                 </div>
-              </>
+
+                {/* Modal */}
+                {viewProductModal && (
+                  <ProductModal
+                    title={isNewProduct ? "Inserir Produto" : "Editar Produto"}
+                    closeFunc={handleProductModal}
+                    isNewProduct={isNewProduct}
+                    product={
+                      isNewProduct
+                        ? {
+                            idProduto:
+                              Math.max(
+                                ...products.map((prod) => prod.idProduto)
+                              ) + 1,
+                            nomeProduto: "",
+                            idMarca: 0,
+                            valor: 0,
+                            quantidade: 0,
+                            promocao: false,
+                          }
+                        : selectedProduct
+                    }
+                    postSaveFunc={postSaveProduct}
+                    postDeleteFunc={postDeleteProduct}
+                    isClosure={false}
+                    isTransaction={false}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </PageContainer.Body>

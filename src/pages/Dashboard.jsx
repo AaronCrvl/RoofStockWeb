@@ -327,7 +327,7 @@ const Dashboard = () => {
                 {["Alcolico", "Sem Alcool"].map((type, index) => (
                   <option
                     key={index}
-                    value={type.tipoProduto === "Alcolico" ? 0 : 1}
+                    value={type === "Alcolico" ? 0 : 1}
                   >
                     {type}
                   </option>

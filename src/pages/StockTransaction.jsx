@@ -14,9 +14,10 @@ import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 import MessageModal from "../components/ui/MessageModal";
 import { formatdateToInput } from "../utils/dateFunctions.util";
 import {
-  // exportTransactionToPdf,
-  exportAllTransactionsToPdf,
+  // ExportTransactionToPdf,
+  ExportAllTransactionsToPdf,
 } from "../utils/PDF/pdfGenerator.utils";
+import ExportPdf from "../components/ui/ExportPdf";
 
 const STOCK_TRANSACTION = [
   {
@@ -663,36 +664,13 @@ function StockTransaction() {
                 </details>
               ))}
           </div>
-          <div className="flex justify-end col-span-5 mb-4">
-            <button
-              onClick={() =>
-                exportAllTransactionsToPdf(
-                  gridView.sort(
-                    (a, b) =>
-                      new Date(b.dataMovimentacao) -
-                      new Date(a.dataMovimentacao)
-                  )
-                )
-              }
-              className="text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 flex items-center space-x-2 px-3 py-2"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-                className="w-5 h-5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4v16m0 0l-4-4m4 4l4-4m-8-6h8a2 2 0 012 2v6a2 2 0 01-2 2h-8a2 2 0 01-2-2v-6a2 2 0 012-2z"
-                />
-              </svg>
-              <span>Export All to PDF</span>
-            </button>
-          </div>
+          <ExportPdf
+            ExportFunction={ExportAllTransactionsToPdf}
+            sortedData={gridView.sort(
+              (a, b) =>
+                new Date(b.dataMovimentacao) - new Date(a.dataMovimentacao)
+            )}
+          />
           <>
             {showRegisterModal && (
               <TransactionRegisterModal

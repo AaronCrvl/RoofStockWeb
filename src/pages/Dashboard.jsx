@@ -14,6 +14,8 @@ import Layout from "../layout/Layout";
 import { dateDiffForProductExpireDate } from "../utils/dateFunctions.util";
 import StockControl from "../components/StockControl";
 import { toast } from "react-toastify";
+import { ExportAllProductsToPdf } from "../utils/PDF/pdfGenerator.utils";
+import ExportPdf from "../components/ui/ExportPdf";
 
 const STOCKS_LIST = [
   {
@@ -426,6 +428,44 @@ const Dashboard = () => {
                       </div>
                     </div>
                   ))}
+                  <ExportPdf
+                    ExportFunction={ExportAllProductsToPdf}
+                    sortedData={products.sort(
+                      (a, b) =>
+                        new Date(b.dataValidade) - new Date(a.dataValidade)
+                    )}
+                  />
+                  {viewProductModal && (
+                    <>
+                      <ProductModal
+                        title={
+                          isNewProduct ? "Inserir Produto" : "Editar Produto"
+                        }
+                        closeFunc={handleProductModal}
+                        isNewProduct={isNewProduct}
+                        product={
+                          isNewProduct
+                            ? {
+                                idProduto:
+                                  Math.max(
+                                    ...products.map((prod) => prod.idProduto)
+                                  ) + 1,
+                                nomeProduto: "",
+                                idMarca: 0,
+                                valor: 0,
+                                quantidade: 0,
+                                promocao: false,
+                              }
+                            : selectedProduct
+                        }
+                        postSaveFunc={postSaveProduct}
+                        postDeleteFunc={postDeleteProduct}
+                        isClosure={false}
+                        isTransaction={false}
+                      />
+                    </>
+                  )}
+
                 </div>
 
                 {/* Modal */}

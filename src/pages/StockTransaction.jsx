@@ -14,8 +14,8 @@ import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 import MessageModal from "../components/ui/MessageModal";
 import { formatdateToInput } from "../utils/dateFunctions.util";
 import {
-  // exportTransactionToPdf,
-  exportAllTransactionsToPdf,
+  // ExportTransactionToPdf,
+  ExportAllTransactionsToPdf,
 } from "../utils/PDF/pdfGenerator.utils";
 
 const STOCK_TRANSACTION = [
@@ -666,7 +666,7 @@ function StockTransaction() {
           <div className="flex justify-end col-span-5 mb-4">
             <button
               onClick={() =>
-                exportAllTransactionsToPdf(
+                ExportAllTransactionsToPdf(
                   gridView.sort(
                     (a, b) =>
                       new Date(b.dataMovimentacao) -

@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { formatdateToInput } from "../utils/dateFunctions.util";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 import ClosureRegisterModal from "../components/StockClosure/ClosureRegisterModal";
+import { ExportAllStockClosuresToPdf } from "../utils/PDF/pdfGenerator.utils";
 
 const fakeAvailableProducts = [
   { idProduto: 1, nomeProduto: "Produto A", quantidadeEstoque: 10 },
@@ -255,7 +256,7 @@ function StockClosure() {
               <div className="grid grid-cols-5 gap-4 mb-4 text-sm text-gray-800 bg-gray-300 p-3 rounded-md font-semibold shadow-sm">
                 <span>Data Fechamento</span>
                 <span>Data Inicial Fechamento</span>
-                <span>Data Final Fechamento</span>                
+                <span>Data Final Fechamento</span>
                 <span>Erro</span>
                 <span>Itens</span>
               </div>
@@ -351,7 +352,35 @@ function StockClosure() {
                 ))}
             </div>
           </div>
-
+          <div className="flex justify-end col-span-5 mb-4">
+            <button
+              onClick={() =>
+                ExportAllStockClosuresToPdf(
+                  stockClosure.sort(
+                    (a, b) =>
+                      new Date(b.dataFechamento) - new Date(a.dataFechamento)
+                  )
+                )
+              }
+              className="text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 flex items-center space-x-2 px-3 py-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4v16m0 0l-4-4m4 4l4-4m-8-6h8a2 2 0 012 2v6a2 2 0 01-2 2h-8a2 2 0 01-2-2v-6a2 2 0 012-2z"
+                />
+              </svg>
+              <span>Export All to PDF</span>
+            </button>
+          </div>
           {modalOpen && (
             <ClosureRegisterModal
               stockId={stocks[0]?.idEstoque}

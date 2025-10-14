@@ -24,7 +24,7 @@ const Login = () => {
         setAdmin(false);
         admin ? navigate("/adminDashboard") : navigate("/dashboard");
         toast.success("Login realizado com sucesso.");
-      } else toast.error("Falha ao realizar login.");
+      } else toast.error("A sessão não foi autenticada.");
     });
   };
 

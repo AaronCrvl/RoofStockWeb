@@ -2,9 +2,12 @@ import axios from "axios";
 // import { getBaseUrl } from "../../Utils/integration.utils";
 
 const onRequest = async (config) => {
-  if (localStorage.getItem("token").length > 0) {
-    config.headers["Authorization"] = `Bearer ${localStorage.getItem("token")}`;
-  }
+  if (localStorage.getItem("token") !== null)
+    if (localStorage.getItem("token").length > 0) {
+      config.headers["Authorization"] = `Bearer ${localStorage.getItem(
+        "token"
+      )}`;
+    }
   return config;
 };
 

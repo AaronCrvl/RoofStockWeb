@@ -99,14 +99,25 @@ function StockClosure() {
 
   useEffect(() => {
     if (!stocks.length && userId) {
-      setStocks(getStockByUser(userId));
+      const iv = setInterval(() => {
+        setStocks(getStockByUser(userId));
+        clearInterval(iv);
+      }, 2000);
+
+      return () => clearInterval(iv);
     }
   }, [stocks, userId]);
 
   useEffect(() => {
     if (!stockClosure.length && stocks.length > 0) {
-      setStockClosure(getStockClosuresByStock(stocks[0].idEstoque));
-      setStockClosureGridView(getStockClosuresByStock(stocks[0].idEstoque));
+      const iv = setInterval(() => {
+        const closures = getStockClosuresByStock(stocks[0].idEstoque);
+        setStockClosure(closures);
+        setStockClosureGridView(closures);
+        clearInterval(iv);
+      }, 2000);
+
+      return () => clearInterval(iv);
     }
   }, [stocks, stockClosure]);
 

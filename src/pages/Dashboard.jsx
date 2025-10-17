@@ -119,14 +119,26 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (stocks == null && userId) {
-      setStocks(getStockByUser(userId));
-      setStocksOverview(stocks[0]);
+      const iv = setInterval(() => {
+        const loaded = getStockByUser(userId);
+        setStocks(loaded);
+        setStocksOverview(loaded[0]);
+        clearInterval(iv);
+      }, 2000);
+
+      return () => clearInterval(iv);
     }
   }, [stocks, userId]);
 
   useEffect(() => {
-    if (products == null && stocks != null)
-      setProducts(getStockProducts(stocks[0].idEstoque));
+    if (products == null && stocks != null) {
+      const iv = setInterval(() => {
+        setProducts(getStockProducts(stocks[0].idEstoque));
+        clearInterval(iv);
+      }, 2000);
+
+      return () => clearInterval(iv);
+    }
   }, [products, stocks]);
 
   const handleStockSelection = (childStockSelect) => {

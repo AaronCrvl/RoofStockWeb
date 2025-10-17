@@ -317,17 +317,36 @@ function StockTransaction() {
   });
 
   useEffect(() => {
-    if (products == null && stocks != null)
-      setProducts(getStockProducts(stocks[0].idEstoque));
+    if (products == null && stocks != null) {
+      const iv = setInterval(() => {
+        setProducts(getStockProducts(stocks[0].idEstoque));
+        clearInterval(iv);
+      }, 2000);
+
+      return () => clearInterval(iv);
+    }
   }, [products, stocks]);
 
   useEffect(() => {
-    if (stocks == null && userId) setStocks(getStockByUser(userId));
+    if (stocks == null && userId) {
+      const iv = setInterval(() => {
+        setStocks(getStockByUser(userId));
+        clearInterval(iv);
+      }, 2000);
+
+      return () => clearInterval(iv);
+    }
   }, [stocks, companyId, userId]);
 
   useEffect(() => {
-    if (stockTransaction == null)
-      setStockTransaction(getStockTransactionsByStock(stocks[0].idEstoque));
+    if (stockTransaction == null && stocks && stocks.length) {
+      const iv = setInterval(() => {
+        setStockTransaction(getStockTransactionsByStock(stocks[0].idEstoque));
+        clearInterval(iv);
+      }, 2000);
+
+      return () => clearInterval(iv);
+    }
   }, [stocks, stockTransaction]);
 
   const handleStockSelection = (childStockSelect) => {

@@ -42,14 +42,3 @@ Serviços e integração
 
 Utilitários
 - `utils/` — utilitários como `dateFunctions.util.ts`, `integration.utils.js`, `PDF/pdfGenerator.utils.js`.
-
-Observações
-- Projetos principais em React com arquivos `.jsx` e alguns arquivos `.ts` (`dateFunctions.util.ts`) — há mistura de JS/TS.
-- Não foi encontrada pasta de testes (`__tests__`/`tests`).
-- Sem arquivos de CI (`.github/workflows`) no escopo lido.
-
-Passos rápidos recomendados
-1. Rodar `pnpm install` ou `npm install` conforme gerenciador e depois `npm run dev` para iniciar.
-2. Padronizar uso de JavaScript ou migrar totalmente para TypeScript.
-3. Adicionar testes automatizados e pipeline CI.
-4. Documentar convenções e variáveis de ambiente (ex.: `.env.example`).

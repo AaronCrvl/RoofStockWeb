@@ -1,26 +1,24 @@
 import axios from "axios";
-// import { getBaseUrl } from "../../Utils/integration.utils";
 
 const onRequest = async (config) => {
-  if (localStorage.getItem("token") !== null)
-    if (localStorage.getItem("token").length > 0) {
-      config.headers["Authorization"] = `Bearer ${localStorage.getItem(
-        "token"
-      )}`;
-    }
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
   return config;
 };
 
 const setupInterceptorsTo = (axiosInstance) => {
-  axiosInstance.interceptors.request.use(onRequest);
+  axiosInstance.interceptors.request.use(onRequest, (error) => Promise.reject(error));
   return axiosInstance;
 };
 
 const api = axios.create({
-  baseURL: "https://localhost:7237",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://localhost:7237",
   headers: {
     Accept: "application/json",
-    "Content-Tye": "application/json",
+    "Content-Type": "application/json",
   },
 });
 

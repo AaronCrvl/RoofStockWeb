@@ -12,12 +12,17 @@ export const Authenticate = async (data) => {
     });
 
     if (response.status == 200) {
-      var token = response.data.token;
-      localStorage.setItem("token", token);
+      const token = response.data.token;
+      if (token) {
+        // armazenar token de forma simples no localStorage; considerar usar httpOnly cookie no backend para maior segurança
+        localStorage.setItem("token", token);
+      }
+      return response.data;
     } else {
       toast.error(`Erro ao autenticar: ${await response.text()}`);
     }
   } catch (err) {
-    toast.error("Error ao tentar realizar o login: ", err);
+    console.error(err);
+    toast.error("Error ao tentar realizar o login: " + (err?.message || ""));
   }
 };

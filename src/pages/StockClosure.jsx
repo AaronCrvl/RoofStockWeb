@@ -10,6 +10,8 @@ import { useForm } from "react-hook-form";
 import { formatdateToInput } from "../utils/dateFunctions.util";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 import ClosureRegisterModal from "../components/StockClosure/ClosureRegisterModal";
+import { ExportAllStockClosuresToPdf } from "../utils/PDF/pdfGenerator.utils";
+import ExportPdf from "../components/ui/ExportPdf";
 
 // ================== Constants ==================
 const fakeAvailableProducts = [
@@ -355,8 +357,13 @@ function StockClosure() {
                   </details>
                 ))}
             </div>
-          </div>
-
+          </div>         
+          <ExportPdf
+            ExportFunction={ExportAllStockClosuresToPdf}
+            sortedData={stockClosure.sort(
+              (a, b) => new Date(b.dataFechamento) - new Date(a.dataFechamento)
+            )}
+          />
           {modalOpen && (
             <ClosureRegisterModal
               isEdit={

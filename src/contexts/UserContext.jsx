@@ -1,9 +1,9 @@
 import React, { createContext, useState, useContext } from 'react';
 
-// Create the context
+// Criar o contexto
 const UserContext = createContext();
 
-// Provider component
+// Componente provedor
 export default function UserProvider({ children }) {
   const [logged, setLogged] = useState(false);
   const [userId, setUserId] = useState(null);  
@@ -25,7 +25,7 @@ export default function UserProvider({ children }) {
   );
 }
 
-// Custom hook for using the context
+// Hook personalizado para usar o contexto
 export function useUser() {
   const context = useContext(UserContext);
   if (!context) {

@@ -10,6 +10,7 @@ import StockTransaction from "../pages/StockTransaction";
 import StockClosure from "../pages/StockClosure";
 import Settings from "../pages/Settings";
 import CreateAccount from "../pages/Login/CreateAccount";
+import Reports from "../pages/Reports";
 
 export default function AppRoutes() {
   return (
@@ -24,6 +25,7 @@ export default function AppRoutes() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/transaction" element={<StockTransaction />} />
           <Route path="/closure" element={<StockClosure />} />
+          <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
 

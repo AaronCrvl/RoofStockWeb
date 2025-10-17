@@ -1,9 +1,9 @@
 import React, { createContext, useState, useContext } from 'react';
 
-// Create the context
+// Criar o contexto
 const CompanyContext = createContext();
 
-// Provider component
+// Componente provedor
 export default function CompanyProvider({ children }) {
   const [appCompanyId, setAppCompany] = useState(null);
 
@@ -14,7 +14,7 @@ export default function CompanyProvider({ children }) {
   );
 }
 
-// Custom hook for accessing the context
+// Hook personalizado para acessar o contexto
 export const useCompany = () => {
   const context = useContext(CompanyContext);
   if (!context) {

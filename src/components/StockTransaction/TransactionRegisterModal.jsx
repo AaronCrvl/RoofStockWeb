@@ -39,14 +39,12 @@ function TransactionRegisterModal({
     },
   });
 
-  //   useEffect(() => {
-  //     if (
-  //       availableItensList != null &&
-  //       availableProducts != null &&
-  //       itensGridView == null
-  //     )
-  //       setItensGridView(...availableProducts);
-  //   }, [availableItensList, availableProducts, itensGridView]);
+  // Initialize itensGridView from the provided available itens when the component mounts or when the prop arrives
+  useEffect(() => {
+    if (itensGridView == null && Array.isArray(availableItensList)) {
+      setItensGridView([...availableItensList]);
+    }
+  }, [availableItensList, itensGridView]);
 
   useEffect(() => {
     if (isEdit) {
@@ -65,7 +63,18 @@ function TransactionRegisterModal({
   };
 
   const handleItemAdd = (id) => {
-    var item = availableProducts.filter((prod) => prod.idProduto == id)[0];
+    const source = Array.isArray(availableProducts) && availableProducts.length
+      ? availableProducts
+      : Array.isArray(availableItensList)
+        ? availableItensList
+        : [];
+
+    const item = source.find((prod) => prod.idProduto == id);
+    if (!item) {
+      toast.error("Produto não encontrado.");
+      return;
+    }
+
     setSelectedProduct(item);
     handleItemModalVisibility(true);
   };
@@ -115,11 +124,19 @@ function TransactionRegisterModal({
   };
 
   const handleGridTextSearch = (e) => {
-    var text = e.target.value;
-    if (text == "") setItensGridView(...availableProducts);
-    else {
-      var newFilteredList = availableProducts.filter((product) =>
-        product.nomeProduto.includes(text)
+    var text = e.target.value || "";
+    const source = Array.isArray(availableProducts) && availableProducts.length
+      ? availableProducts
+      : Array.isArray(availableItensList)
+        ? availableItensList
+        : [];
+
+    if (text.trim() === "") {
+      setItensGridView([...source]);
+    } else {
+      const lower = text.toLowerCase();
+      var newFilteredList = source.filter((product) =>
+        (product.nomeProduto || "").toLowerCase().includes(lower)
       );
       setItensGridView(newFilteredList);
     }

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { PageContainer } from "../components/PageContainer/index";
-import { getStockTransactionsByStock } from "../services/api/stockTransaction.services";
+//import { getStockTransactionsByStock } from "../services/api/stockTransaction.services";
 import StockControl from "../components/StockControl";
 import { useUser } from "../contexts/UserContext";
 import { useCompany } from "../contexts/CompanyContext";
-import { getStockByUser } from "../services/api/stock.service";
+//import { getStockByUser } from "../services/api/stock.service";
 import Layout from "../layout/Layout";
 import TransactionRegisterModal from "../components/StockTransaction/TransactionRegisterModal";
 import { toast } from "react-toastify";
-import { getStockProducts } from "../services/api/stockProduct.services";
+//import { getStockProducts } from "../services/api/stockProduct.services";
 import { useForm } from "react-hook-form";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 import MessageModal from "../components/ui/MessageModal";
@@ -288,11 +288,11 @@ function StockTransaction() {
   const { userId } = useUser();
   const { companyId } = useCompany();
 
-  const [stocks, setStocks] = useState(STOCKS_LIST);
-  const [stockTransaction, setStockTransaction] = useState(STOCK_TRANSACTION);
+  const [stocks, setStocks] = useState(null);
+  const [stockTransaction, setStockTransaction] = useState(null);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
-  const [products, setProducts] = useState(PRODUCT_LIST);
-  const [gridView, setGridView] = useState(STOCK_TRANSACTION);
+  const [products, setProducts] = useState(null);
+  const [gridView, setGridView] = useState(null);
   const [showRegisterModal, setshowRegisterModal] = useState(false);
   const [isEditItem, setIsEditItem] = useState(false);
   const [transactionItemEdit, setTransactionItemEdit] = useState(null);
@@ -318,34 +318,30 @@ function StockTransaction() {
 
   useEffect(() => {
     if (products == null && stocks != null) {
-      const iv = setInterval(() => {
-        setProducts(getStockProducts(stocks[0].idEstoque));
-        clearInterval(iv);
-      }, 2000);
-
-      return () => clearInterval(iv);
+      setInterval(() => {
+        //setProducts(getStockProducts(stocks[0].idEstoque));        
+        setProducts(PRODUCT_LIST);        
+      }, 2000);      
     }
   }, [products, stocks]);
 
   useEffect(() => {
-    if (stocks == null && userId) {
-      const iv = setInterval(() => {
-        setStocks(getStockByUser(userId));
-        clearInterval(iv);
-      }, 2000);
-
-      return () => clearInterval(iv);
+    //if (stocks == null && userId) {
+    if (stocks == null) {
+      setInterval(() => {
+        //setStocks(getStockByUser(userId));      
+        setStocks(STOCKS_LIST);
+      }, 2000);      
     }
   }, [stocks, companyId, userId]);
 
   useEffect(() => {
     if (stockTransaction == null && stocks && stocks.length) {
-      const iv = setInterval(() => {
-        setStockTransaction(getStockTransactionsByStock(stocks[0].idEstoque));
-        clearInterval(iv);
-      }, 2000);
-
-      return () => clearInterval(iv);
+      setInterval(() => {
+        //setStockTransaction(getStockTransactionsByStock(stocks[0].idEstoque));
+        setStockTransaction(STOCK_TRANSACTION);
+        setGridView(STOCK_TRANSACTION);        
+      }, 2000);      
     }
   }, [stocks, stockTransaction]);
 
@@ -531,179 +527,198 @@ function StockTransaction() {
           />
         </PageContainer.Header>
         <PageContainer.Body>
-          <>
-            {showMessageModal && (
-              <MessageModal
-                message={messageModal.message}
-                options={messageModal.options}
-              />
-            )}
-          </>
-          <div className="flex bg-white p-4 rounded-lg items-center justify-between mb-4">
-            <div className="flex">
-              <label className="text-black mr-2">Data da Movimentação</label>
-              <input
-                name="dataMovimentacao"
-                type="date"
-                {...register("dataMovimentacao", {
-                  valueAsDate: true,
-                })}
-                className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
-              />
+          {products === null ? (
+            <div className="p-6 bg-white rounded-lg shadow text-gray-500">
+              Carregando transações de estoque...
             </div>
-            <div className="flex-shrink-0">
-              <label className="text-black mr-2">Tipo Movimentação</label>
-              <select
-                className="p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-                {...register("tipoMovimentacao", {
-                  valueAsNumber: true,
-                  min: 0,
-                  max: 2,
-                })}
-              >
-                <option value={0}>Selecione o tipo</option>
-                <option value={1}>Entrada</option>
-                <option value={2}>Saída</option>
-              </select>
-            </div>
-            <div className="flex-shrink-0">
-              <label className="text-black mr-2">Processado ?</label>
-              <select
-                className="p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-                {...register("processado", {
-                  valueAsNumber: true,
-                  min: 0,
-                  max: 2,
-                })}
-              >
-                <option value={0}>Selecione</option>
-                <option value={1}>Sim</option>
-                <option value={2}>Não</option>
-              </select>
-            </div>
-            <div className="flex-shrink-0">
-              <button
-                onClick={handleGridSearch}
-                className="ml-4 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300"
-              >
-                Filtrar
-              </button>
-            </div>
-            <div className="flex-shrink-0">
-              <button
-                className="ml-4 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300"
-                onClick={() => handleModalVisibility(true)}
-              >
-                + Adicionar Movimentação
-              </button>
-            </div>
-          </div>
+          ) : (
+            <div>
+              <div>
+                {showMessageModal && (
+                  <MessageModal
+                    message={messageModal.message}
+                    options={messageModal.options}
+                  />
+                )}
+              </div>
+              <div className="flex bg-white p-4 rounded-lg items-center justify-between mb-4">
+                <div className="flex">
+                  <label className="text-black mr-2">
+                    Data da Movimentação
+                  </label>
+                  <input
+                    name="dataMovimentacao"
+                    type="date"
+                    {...register("dataMovimentacao", {
+                      valueAsDate: true,
+                    })}
+                    className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 shadow-sm transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                  />
+                </div>
+                <div className="flex-shrink-0">
+                  <label className="text-black mr-2">Tipo Movimentação</label>
+                  <select
+                    className="p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                    {...register("tipoMovimentacao", {
+                      valueAsNumber: true,
+                      min: 0,
+                      max: 2,
+                    })}
+                  >
+                    <option value={0}>Selecione o tipo</option>
+                    <option value={1}>Entrada</option>
+                    <option value={2}>Saída</option>
+                  </select>
+                </div>
+                <div className="flex-shrink-0">
+                  <label className="text-black mr-2">Processado ?</label>
+                  <select
+                    className="p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                    {...register("processado", {
+                      valueAsNumber: true,
+                      min: 0,
+                      max: 2,
+                    })}
+                  >
+                    <option value={0}>Selecione</option>
+                    <option value={1}>Sim</option>
+                    <option value={2}>Não</option>
+                  </select>
+                </div>
+                <div className="flex-shrink-0">
+                  <button
+                    onClick={handleGridSearch}
+                    className="ml-4 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300"
+                  >
+                    Filtrar
+                  </button>
+                </div>
+                <div className="flex-shrink-0">
+                  <button
+                    className="ml-4 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300"
+                    onClick={() => handleModalVisibility(true)}
+                  >
+                    + Adicionar Movimentação
+                  </button>
+                </div>
+              </div>
 
-          <div className="h-screen overflow-y-auto p-6 bg-gray-100">
-            <div className="grid grid-cols-5 gap-4 mb-4 text-sm text-gray-800 bg-gray-300 p-3 rounded-md font-semibold shadow-sm">
-              <span>Data Movimentação</span>
-              <span>Entrada</span>
-              <span>Processado</span>
-              <span>Itens</span>
-              <span>Ações</span>
-            </div>
+              <div className="h-screen overflow-y-auto p-6 bg-gray-100">
+                <div className="grid grid-cols-5 gap-4 mb-4 text-sm text-gray-800 bg-gray-300 p-3 rounded-md font-semibold shadow-sm">
+                  <span>Data Movimentação</span>
+                  <span>Entrada</span>
+                  <span>Processado</span>
+                  <span>Itens</span>
+                  <span>Ações</span>
+                </div>
 
-            {gridView
-              .sort(
-                (a, b) =>
-                  new Date(b.dataMovimentacao) - new Date(a.dataMovimentacao)
-              )
-              .map((transaction) => (
-                <details
-                  key={transaction.idMovimentacao}
-                  className="mb-4 border rounded-md shadow-xl bg-white"
-                >
-                  <summary className="grid grid-cols-5 gap-4 p-4 text-gray-900 hover:text-blue-600 hover:font-medium transition-all duration-300 cursor-pointer hover:scale-110">
-                    <span>
-                      {transaction.dataMovimentacao == undefined
-                        ? ""
-                        : transaction.dataMovimentacao.toLocaleDateString()}
-                    </span>
-                    <span>
-                      {transaction.tipoMovimentacao == 1 ? "Entrada" : "Saída"}
-                    </span>
-                    <span>{transaction.processado ? "Sim" : "Não"}</span>
-                    <span>{transaction.itens.length}</span>
-                    <div
-                      className="p-2 bg-red-600 w-min rounded-lg hover:bg-red-900 hover:cursor-pointer transition-all duration-300"
-                      aria-label="Excluir"
-                      onClick={() => handleTransactionExclusion(transaction.idMovimentacao)}
+                {gridView
+                  .sort(
+                    (a, b) =>
+                      new Date(b.dataMovimentacao) -
+                      new Date(a.dataMovimentacao)
+                  )
+                  .map((transaction) => (
+                    <details
+                      key={transaction.idMovimentacao}
+                      className="mb-4 border rounded-md shadow-xl bg-white"
                     >
-                      <TrashIcon className="w-3 h-3 text-white" />
-                    </div>
-                  </summary>
-
-                  <form className="p-5 bg-blue-200/50 rounded-b-md text-gray-800 border-t">
-                    <div className="grid grid-cols-4 gap-4 mb-2 font-semibold text-blue-900 bg-blue-200 p-2 rounded">
-                      <span>Produto</span>
-                      <span>Processado</span>
-                      <span>Quantidade</span>
-                      <span>Ações</span>
-                    </div>
-
-                    {transaction.itens.map((item, index) => (
-                      <div
-                        key={index}
-                        className="grid grid-cols-4 gap-4 p-3 mb-2 text-sm bg-white text-gray-900 rounded shadow-sm border border-gray-200 hover:border-blue-400 transition-all duration-200"
-                      >
-                        <span>{item.nomeProduto}</span>
-                        <span>{item.processado ? "Sim" : "Não"}</span>
-                        <span>{item.quantidadeMovimentacao}</span>
-                        <div className="flex justify-center items-center space-x-4">
-                          <div
-                            className="p-2 bg-blue-600 rounded-lg hover:bg-blue-900 hover:cursor-pointer transition-all duration-300"
-                            aria-label="Editar"
-                            onClick={() =>
-                              handleTransactionItemEdit(true, item)
-                            }
-                          >
-                            <PencilIcon className="w-3 h-3 text-white" />
-                          </div>
-                          <div
-                            className="p-2 bg-red-600 rounded-lg hover:bg-red-900 hover:cursor-pointer transition-all duration-300"
-                            aria-label="Excluir"
-                            onClick={() =>
-                              handleTransactionItemDeletion(
-                                item.idMovimentacao,
-                                item.idItemMovimentacao
-                              )
-                            }
-                          >
-                            <TrashIcon className="w-3 h-3 text-white" />
-                          </div>
+                      <summary className="grid grid-cols-5 gap-4 p-4 text-gray-900 hover:text-blue-600 hover:font-medium transition-all duration-300 cursor-pointer hover:scale-110">
+                        <span>
+                          {transaction.dataMovimentacao == undefined
+                            ? ""
+                            : transaction.dataMovimentacao.toLocaleDateString()}
+                        </span>
+                        <span>
+                          {transaction.tipoMovimentacao == 1
+                            ? "Entrada"
+                            : "Saída"}
+                        </span>
+                        <span>{transaction.processado ? "Sim" : "Não"}</span>
+                        <span>{transaction.itens.length}</span>
+                        <div
+                          className="p-2 bg-red-600 w-min rounded-lg hover:bg-red-900 hover:cursor-pointer transition-all duration-300"
+                          aria-label="Excluir"
+                          onClick={() =>
+                            handleTransactionExclusion(
+                              transaction.idMovimentacao
+                            )
+                          }
+                        >
+                          <TrashIcon className="w-3 h-3 text-white" />
                         </div>
-                      </div>
-                    ))}
-                  </form>
-                </details>
-              ))}
-          </div>
-          <ExportPdf
-            ExportFunction={ExportAllTransactionsToPdf}
-            sortedData={gridView.sort(
-              (a, b) =>
-                new Date(b.dataMovimentacao) - new Date(a.dataMovimentacao)
-            )}
-          />
-          <>
-            {showRegisterModal && (
-              <TransactionRegisterModal
-                stockId={stockTransaction[0].idEstoque}
-                pDefaultTransaction={selectedTransaction}
-                isEdit={isEditItem}
-                transactionItemEdit={isEditItem ? transactionItemEdit : null}
-                availableItensList={products}
-                pTransactionItens={transactionItens}
-                postSaveFunc={handleAddNewTransaction}
-                closeFunc={handleModalVisibility}
+                      </summary>
+
+                      <form className="p-5 bg-blue-200/50 rounded-b-md text-gray-800 border-t">
+                        <div className="grid grid-cols-4 gap-4 mb-2 font-semibold text-blue-900 bg-blue-200 p-2 rounded">
+                          <span>Produto</span>
+                          <span>Processado</span>
+                          <span>Quantidade</span>
+                          <span>Ações</span>
+                        </div>
+
+                        {transaction.itens.map((item, index) => (
+                          <div
+                            key={index}
+                            className="grid grid-cols-4 gap-4 p-3 mb-2 text-sm bg-white text-gray-900 rounded shadow-sm border border-gray-200 hover:border-blue-400 transition-all duration-200"
+                          >
+                            <span>{item.nomeProduto}</span>
+                            <span>{item.processado ? "Sim" : "Não"}</span>
+                            <span>{item.quantidadeMovimentacao}</span>
+                            <div className="flex justify-center items-center space-x-4">
+                              <div
+                                className="p-2 bg-blue-600 rounded-lg hover:bg-blue-900 hover:cursor-pointer transition-all duration-300"
+                                aria-label="Editar"
+                                onClick={() =>
+                                  handleTransactionItemEdit(true, item)
+                                }
+                              >
+                                <PencilIcon className="w-3 h-3 text-white" />
+                              </div>
+                              <div
+                                className="p-2 bg-red-600 rounded-lg hover:bg-red-900 hover:cursor-pointer transition-all duration-300"
+                                aria-label="Excluir"
+                                onClick={() =>
+                                  handleTransactionItemDeletion(
+                                    item.idMovimentacao,
+                                    item.idItemMovimentacao
+                                  )
+                                }
+                              >
+                                <TrashIcon className="w-3 h-3 text-white" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </form>
+                    </details>
+                  ))}
+              </div>
+              <ExportPdf
+                ExportFunction={ExportAllTransactionsToPdf}
+                sortedData={gridView.sort(
+                  (a, b) =>
+                    new Date(b.dataMovimentacao) - new Date(a.dataMovimentacao)
+                )}
               />
-            )}
-          </>
+              <div>
+                {showRegisterModal && (
+                  <TransactionRegisterModal
+                    stockId={stockTransaction[0].idEstoque}
+                    pDefaultTransaction={selectedTransaction}
+                    isEdit={isEditItem}
+                    transactionItemEdit={
+                      isEditItem ? transactionItemEdit : null
+                    }
+                    availableItensList={products}
+                    pTransactionItens={transactionItens}
+                    postSaveFunc={handleAddNewTransaction}
+                    closeFunc={handleModalVisibility}
+                  />
+                )}
+              </div>
+            </div>
+          )}
         </PageContainer.Body>
       </PageContainer.Root>
     </Layout>

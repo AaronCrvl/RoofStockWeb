@@ -68,56 +68,55 @@ const ReportDashboard = ({ products = [] }) => {
   const cards = getDashboardCards(products);
 
   return (
-    <div className="w-full">
-      <div className="flex gap-4 overflow-x-auto">
+    <div className="sticky top-4 z-10 bg-white/80 backdrop-blur-md rounded-lg border border-gray-200 p-4 shadow-sm overflow-x-auto scrollbar-hide transition-all duration-300">
+      <div className="flex flex-nowrap gap-6 min-w-full">
         {cards.map((c, idx) => (
           <div
             key={idx}
-            className="min-w-[260px] flex-1 bg-white rounded-lg shadow p-4 flex flex-col"
+            className="min-w-[280px] bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition duration-200 p-5 flex flex-col justify-between"
           >
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xl font-semibold text-gray-800">{c.title}</h3>
-              <div className="text-3xl font-bold text-indigo-600">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-semibold text-gray-800">
+                {c.title}
+              </h3>
+              <span className="text-2xl font-bold text-indigo-600">
                 {c.items.length}
-              </div>
+              </span>
             </div>
 
-            <div className="flex-1">
+            <div className="space-y-3 flex-1">
               {c.items.length === 0 ? (
-                <div className="text-sm text-gray-500">
+                <p className="text-sm text-gray-400">
                   Nenhum produto encontrado
-                </div>
+                </p>
               ) : (
-                <ul className="space-y-2">
-                  {c.items.slice(0, 4).map((p) => (
-                    <li
-                      key={p.idProduto}
-                      className="flex items-center justify-between bg-gray-50 rounded p-2"
-                    >
+                c.items.slice(0, 4).map((p) => (
+                  <div
+                    key={p.idProduto}
+                    className="flex justify-between items-start p-2 bg-gray-50 hover:bg-gray-100 rounded-md transition"
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-800">
+                        {p.nomeProduto}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {p.nomeMarca} • {p.nomeResponsavel}
+                      </span>
+                    </div>
+                    <div className="text-right text-xs text-gray-600 space-y-1">
                       <div>
-                        <div className="text-sm font-medium text-gray-800">
-                          {p.nomeProduto}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {p.nomeMarca} • Resp: {p.nomeResponsavel}
-                        </div>
+                        Qtd:{" "}
+                        <span className="font-semibold">{p.quantidade}</span>
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm font-semibold">
-                          Qtd: {p.quantidade}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          Val: {p.dataValidade}
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                      <div>Val: {p.dataValidade}</div>
+                    </div>
+                  </div>
+                ))
               )}
             </div>
 
-            <div className="mt-3 text-right">
-              <button className="text-sm text-indigo-600 hover:underline">
+            <div className="pt-4 text-right">
+              <button className="text-sm text-indigo-600 hover:underline font-medium">
                 Ver todos
               </button>
             </div>
@@ -223,32 +222,32 @@ const Reports = () => {
         </PageContainer.Header>
         <PageContainer.Body>
           {products == null ? (
-            <div className="p-6 bg-white rounded-lg shadow text-gray-500">
+            <div className="p-6 bg-white rounded-xl border border-gray-200 shadow-sm text-gray-500 text-sm animate-pulse">
               Carregando relatórios...
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 space-y-4">
-                <ReportDashboard products={filteredProducts} />
+            <div className="space-y-8">
+              <ReportDashboard products={filteredProducts} />
 
-                <div className="bg-white p-4 rounded-lg shadow">
-                  <h3 className="text-lg font-semibold mb-2">
-                    Resumo (AI) — placeholder
-                  </h3>
-                  <p className="text-sm text-gray-700">
-                    Resumo gerado por AI (placeholder): Neste período há{" "}
-                    {filteredProducts.length} produtos que correspondem aos critérios
-                    selecionados. Aqui será exibido um resumo automático com
-                    insights como número de promoções, quantidade média e produtos
-                    mais críticos.
-                  </p>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 space-y-6">
+                  <section className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                      Resumo Inteligente
+                    </h2>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      Foram encontrados {filteredProducts.length} produtos para
+                      os critérios selecionados. Um resumo inteligente com dados
+                      de promoções, validades e mais será exibido aqui.
+                    </p>
+                  </section>
                 </div>
-              </div>
 
-              <aside className="space-y-4">
-                <ChartsPanel products={filteredProducts} />
-                <AlertsPanel products={filteredProducts} />
-              </aside>
+                <aside className="space-y-6">
+                  <ChartsPanel products={filteredProducts} />
+                  <AlertsPanel products={filteredProducts} />
+                </aside>
+              </div>
             </div>
           )}
         </PageContainer.Body>

@@ -632,7 +632,7 @@ function StockTransaction() {
                     <div
                       className="p-2 bg-red-600 w-min rounded-lg hover:bg-red-900 hover:cursor-pointer transition-all duration-300"
                       aria-label="Excluir"
-                      onClick={() => handleTransactionExclusion(transaction.id)}
+                      onClick={() => handleTransactionExclusion(transaction.idMovimentacao)}
                     >
                       <TrashIcon className="w-3 h-3 text-white" />
                     </div>

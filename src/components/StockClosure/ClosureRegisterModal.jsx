@@ -13,6 +13,8 @@ function ClosureRegisterModal({
   availableItensList,
   closeFunc,
   postSaveFunc,
+  // new prop to indicate we're editing a single item instead of the whole closure
+  editItemMode,
 }) {
   const [availableProducts] = useState(availableItensList || []);
   const [itensGridView, setItensGridView] = useState(availableProducts);
@@ -30,22 +32,29 @@ function ClosureRegisterModal({
       dataFechamento: defaultClosure
         ? formatdateToInput(defaultClosure.dataFechamento)
         : formatdateToInput(),
-      dataIncialFechamento: defaultClosure
-        ? formatdateToInput(defaultClosure.dataIncialFechamento)
+      // normalized field names to match closure objects: dataInicioPeriodo / dataFinalPeriodo
+      dataInicioPeriodo: defaultClosure
+        ? formatdateToInput(defaultClosure.dataInicioPeriodo)
         : formatdateToInput(),
-      dataFinalFechamento: defaultClosure
-        ? formatdateToInput(defaultClosure.dataFinalFechamento)
+      dataFinalPeriodo: defaultClosure
+        ? formatdateToInput(defaultClosure.dataFinalPeriodo)
         : formatdateToInput(),
       erro: defaultClosure ? defaultClosure.erro : false,
     },
   });
 
   useEffect(() => {
-    if (isEdit && closureItemEdit) {
+    // keep itensGridView in sync if available products change
+    setItensGridView(availableProducts);
+  }, [availableProducts]);
+
+  useEffect(() => {
+    if (isEdit && closureItemEdit && editItemMode) {
+      // open product modal in item-edit mode
       setSelectedProduct(closureItemEdit);
       setOpenItemModal(true);
     }
-  }, [isEdit, closureItemEdit]);
+  }, [isEdit, closureItemEdit, editItemMode]);
 
   const handleItemModalVisibility = (open) => {
     setOpenItemModal(open);
@@ -60,18 +69,49 @@ function ClosureRegisterModal({
     }
   };
 
-  const handlePostAddItem = (product) => {
+  const handlePostAddItem = (arg1, arg2) => {
     try {
-      // Check if product already exists, update or add new
+      // ProductModal calls postSaveFunc(id, data, isNewProduct)
+      // Normalize incoming values to a closure-item-shaped object
+      let productObj;
+
+      if (arg2 !== undefined) {
+        // Signature: (id, data, isNewProduct)
+        const id = arg1;
+        const data = arg2 || {};
+        const formBase = selectedProduct || {};
+        productObj = {
+          idProduto: formBase.idProduto ?? data.idProduto ?? id ?? null,
+          nomeProduto: formBase.nomeProduto ?? data.nomeProduto ?? "",
+          quantidadeFinal:
+            data.quantidadeMovimentacao ?? data.quantidade ?? 0,
+          divergencia: data.divergencia ?? false,
+          quantidadeDivergencia: data.quantidadeDivergencia ?? 0,
+          quebrasContabilizadas: data.quebras ?? 0,
+          cortesias: data.cortesias ?? 0,
+        };
+      } else {
+        // Signature: (product)
+        productObj = arg1;
+      }
+
+      // If we're in item-edit mode, return single updated item to parent
+      if (editItemMode) {
+        postSaveFunc && postSaveFunc(productObj);
+        handleItemModalVisibility(false);
+        return;
+      }
+
+      // Full-closure flow: add/update item inside closureItens
       const existsIndex = closureItens.findIndex(
-        (item) => item.idProduto === product.idProduto
+        (item) => item.idProduto === productObj.idProduto
       );
       let newItems;
       if (existsIndex !== -1) {
         newItems = [...closureItens];
-        newItems[existsIndex] = product;
+        newItems[existsIndex] = productObj;
       } else {
-        newItems = [...closureItens, product];
+        newItems = [...closureItens, productObj];
       }
       setClosureItens(newItems);
       handleItemModalVisibility(false);
@@ -94,8 +134,14 @@ function ClosureRegisterModal({
   };
 
   const onSubmit = () => {
-    if (closureItens.length === 0) {
+    // Full-closure save
+    if (!editItemMode && closureItens.length === 0) {
       toast.error("O fechamento precisa de itens.");
+      return;
+    }
+
+    if (editItemMode) {
+      // nothing to do here; item-save handled by ProductModal/postSaveFunc flow
       return;
     }
 
@@ -103,16 +149,36 @@ function ClosureRegisterModal({
       idFechamento: isEdit && defaultClosure ? defaultClosure.idFechamento : 0,
       idEstoque: stockId,
       dataFechamento: getValues("dataFechamento"),
-      dataIncialFechamento: getValues("dataIncialFechamento"),
-      dataFinalFechamento: getValues("dataFinalFechamento"),
+      dataInicioPeriodo: getValues("dataInicioPeriodo"),
+      dataFinalPeriodo: getValues("dataFinalPeriodo"),
       erro: getValues("erro"),
       itens: closureItens,
     };
 
-    postSaveFunc(data);
+    postSaveFunc && postSaveFunc(data);
     toast.success("Fechamento salvo com sucesso!");
-    closeFunc(false);
+    closeFunc && closeFunc();
   };
+
+  // If we're only editing a single item, render the ProductModal immediately
+  if (editItemMode) {
+    return (
+      <div className="fixed inset-0 z-10 flex items-center justify-center">
+        <div className="fixed inset-0 bg-gray-500/75" aria-hidden="true"></div>
+        {openItemModal && (
+          <ProductModal
+            title="Alterar item no fechamento"
+            product={selectedProduct}
+            isNewProduct={true}
+            isTransaction={true}
+            postSaveFunc={handlePostAddItem}
+            closeFunc={() => handleItemModalVisibility(false)}
+            isClosure={true}
+          />
+        )}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -143,7 +209,7 @@ function ClosureRegisterModal({
             <button
               type="button"
               className="rounded-md bg-red-600 px-3 py-1 text-sm font-semibold text-white hover:bg-red-500"
-              onClick={() => closeFunc(false)}
+              onClick={() => closeFunc && closeFunc()}
               aria-label="Fechar modal"
             >
               Fechar
@@ -180,25 +246,23 @@ function ClosureRegisterModal({
             <div>
               <label
                 className="block text-sm font-medium mb-1"
-                htmlFor="dataIncialFechamento"
+                htmlFor="dataInicioPeriodo"
               >
                 Data Inicial do Período
               </label>
               <input
-                id="dataIncialFechamento"
+                id="dataInicioPeriodo"
                 type="date"
-                {...register("dataIncialFechamento", {
+                {...register("dataInicioPeriodo", {
                   required: "Data obrigatória.",
                 })}
                 className={`w-full rounded-md border px-4 py-2 text-gray-900 shadow-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 ${
-                  errors.dataIncialFechamento
-                    ? "border-red-600"
-                    : "border-gray-300"
+                  errors.dataInicioPeriodo ? "border-red-600" : "border-gray-300"
                 }`}
               />
-              {errors.dataIncialFechamento && (
+              {errors.dataInicioPeriodo && (
                 <p className="mt-1 text-sm text-red-600">
-                  {errors.dataIncialFechamento.message}
+                  {errors.dataInicioPeriodo.message}
                 </p>
               )}
             </div>
@@ -206,25 +270,23 @@ function ClosureRegisterModal({
             <div>
               <label
                 className="block text-sm font-medium mb-1"
-                htmlFor="dataFinalFechamento"
+                htmlFor="dataFinalPeriodo"
               >
                 Data Final do Período
               </label>
               <input
-                id="dataFinalFechamento"
+                id="dataFinalPeriodo"
                 type="date"
-                {...register("dataFinalFechamento", {
+                {...register("dataFinalPeriodo", {
                   required: "Data obrigatória.",
                 })}
                 className={`w-full rounded-md border px-4 py-2 text-gray-900 shadow-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 ${
-                  errors.dataFinalFechamento
-                    ? "border-red-600"
-                    : "border-gray-300"
+                  errors.dataFinalPeriodo ? "border-red-600" : "border-gray-300"
                 }`}
               />
-              {errors.dataFinalFechamento && (
+              {errors.dataFinalPeriodo && (
                 <p className="mt-1 text-sm text-red-600">
-                  {errors.dataFinalFechamento.message}
+                  {errors.dataFinalPeriodo.message}
                 </p>
               )}
             </div>

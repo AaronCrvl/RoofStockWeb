@@ -155,7 +155,7 @@ function StockClosure() {
     setModalOpen(true);
   };
 
-  // Save item changes from modal
+  // Save item changes from modal (single item)
   const handleSaveItem = (updatedItem) => {
     setStockClosure((prev) => {
       // Find closure index
@@ -169,7 +169,9 @@ function StockClosure() {
       updatedClosure.itens = [...updatedClosure.itens];
 
       // Replace edited item
-      updatedClosure.itens[editingItemIndex] = updatedItem;
+      if (editingItemIndex >= 0) {
+        updatedClosure.itens[editingItemIndex] = updatedItem;
+      }
 
       // Replace closure in array
       const newClosures = [...prev];
@@ -186,10 +188,34 @@ function StockClosure() {
     setEditingItemIndex(null);
   };
 
+  // Save full closure (create or update)
+  const handleSaveClosure = (closure) => {
+    setStockClosure((prev) => {
+      // If closure has id and exists -> update
+      const idx = prev.findIndex((c) => c.idFechamento === closure.idFechamento);
+      let newList;
+      if (idx !== -1) {
+        newList = [...prev];
+        newList[idx] = closure;
+      } else {
+        // assign a simple id if none
+        const nextId = prev.length ? Math.max(...prev.map((c) => c.idFechamento)) + 1 : 1;
+        closure.idFechamento = closure.idFechamento || nextId;
+        newList = [...prev, closure];
+      }
+
+      setStockClosureGridView(newList);
+      return newList;
+    });
+
+    setModalOpen(false);
+    setEditingClosureId(null);
+    setEditingItemIndex(null);
+  };
+
   // Open modal for adding a new closure (optional)
   const openAddClosureModal = () => {
-    // You may implement adding a new closure with default empty item
-    // For now, just open modal with no editingClosureId and itemIndex -1
+    // Open modal with no editingClosureId and itemIndex -1 => full-closure create mode
     setEditingClosureId(null);
     setEditingItemIndex(-1);
     setModalOpen(true);
@@ -198,7 +224,7 @@ function StockClosure() {
   // Prepare item to edit (existing or new)
   const getEditingItem = () => {
     if (editingClosureId === null && editingItemIndex === -1) {
-      // New item case
+      // New item case for full-closure creation
       return {
         idProduto: null,
         nomeProduto: "",
@@ -216,6 +242,8 @@ function StockClosure() {
     if (!closure || editingItemIndex === null) return null;
     return closure.itens[editingItemIndex];
   };
+
+  const isEditItemMode = modalOpen && editingClosureId !== null && editingItemIndex !== null && editingItemIndex >= 0;
 
   return (
     <Layout>
@@ -375,9 +403,22 @@ function StockClosure() {
               stockId={stocks[0]?.idEstoque}
               isEdit={true}
               closureItemEdit={getEditingItem()}
+              defaultClosure={
+                // pass default closure only when editing a full closure (not item)
+                editingClosureId !== null && editingItemIndex === -1
+                  ? stockClosure.find((c) => c.idFechamento === editingClosureId)
+                  : undefined
+              }
+              editItemMode={isEditItemMode}
               closeFunc={() => setModalOpen(false)}
-              postSaveFunc={handleSaveItem}
+              postSaveFunc={isEditItemMode ? handleSaveItem : handleSaveClosure}
               availableItensList={fakeAvailableProducts}
+              pClosureItens={
+                // when creating a new closure or editing full closure, pass current items
+                !isEditItemMode && editingClosureId !== null
+                  ? stockClosure.find((c) => c.idFechamento === editingClosureId)?.itens
+                  : []
+              }
             />
           )}
         </PageContainer.Body>

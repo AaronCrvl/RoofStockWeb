@@ -15,9 +15,12 @@ function TransactionRegisterModal({
   closeFunc,
   postSaveFunc,
 }) {
-  const [availableProducts] = useState(availableItensList);
+  const [availableProducts] = useState(availableItensList || []);
   const [defaultTransaction] = useState(isEdit ? pDefaultTransaction : null);
-  const [itensGridView, setItensGridView] = useState(null);
+  // initialize itensGridView from availableProducts
+  const [itensGridView, setItensGridView] = useState(
+    availableItensList ? availableItensList : []
+  );
   const [openItemModal, setOpenItemModal] = useState(false);
   const [transactionItens, setTransactionItens] = useState(
     pTransactionItens == null ? [] : pTransactionItens
@@ -39,17 +42,13 @@ function TransactionRegisterModal({
     },
   });
 
-  //   useEffect(() => {
-  //     if (
-  //       availableItensList != null &&
-  //       availableProducts != null &&
-  //       itensGridView == null
-  //     )
-  //       setItensGridView(...availableProducts);
-  //   }, [availableItensList, availableProducts, itensGridView]);
+  useEffect(() => {
+    // keep itensGridView in sync when available products change
+    setItensGridView(availableProducts);
+  }, [availableProducts]);
 
   useEffect(() => {
-    if (isEdit) {
+    if (isEdit && transactionItemEdit) {
       setSelectedProduct(transactionItemEdit);
       handleItemModalVisibility(true);
     }
@@ -65,9 +64,11 @@ function TransactionRegisterModal({
   };
 
   const handleItemAdd = (id) => {
-    var item = availableProducts.filter((prod) => prod.idProduto == id)[0];
-    setSelectedProduct(item);
-    handleItemModalVisibility(true);
+    const item = availableProducts.find((prod) => prod.idProduto === id);
+    if (item) {
+      setSelectedProduct(item);
+      handleItemModalVisibility(true);
+    }
   };
 
   const handlePostAddItem = (id, product, isNewProduct) => {
@@ -115,11 +116,11 @@ function TransactionRegisterModal({
   };
 
   const handleGridTextSearch = (e) => {
-    var text = e.target.value;
-    if (text == "") setItensGridView(...availableProducts);
+    var text = (e.target.value || "").toLowerCase();
+    if (text === "") setItensGridView(availableProducts);
     else {
       var newFilteredList = availableProducts.filter((product) =>
-        product.nomeProduto.includes(text)
+        product.nomeProduto.toLowerCase().includes(text)
       );
       setItensGridView(newFilteredList);
     }
